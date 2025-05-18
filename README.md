@@ -8,12 +8,11 @@ This repository contains a small FastAPI application with user authentication.
 - Protected page that greets authenticated users
 
 ## Development
-Create a virtual environment and install dependencies:
+Run the setup script to create a virtual environment and install dependencies:
 
 ```bash
-python3 -m venv venv
+./setup.sh
 source venv/bin/activate
-pip install -r requirements.txt
 ```
 
 Run the application:
