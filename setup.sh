@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Install PostgreSQL if available (may require sudo privileges)
-# if command -v apt-get >/dev/null 2>&1; then
-#     sudo apt-get update
-#     sudo apt-get install -y postgresql
-#     sudo service postgresql start
-# fi
-
 # Create Python virtual environment for the project
 python3 -m venv venv
 
@@ -24,6 +17,7 @@ pip install fastapi \
     "passlib[bcrypt]" \
     pytest \
     httpx \
-    itsdangerous
+    itsdangerous \
+    psycopg2-binary
 
 echo "Environment setup complete. Activate with 'source venv/bin/activate'"
