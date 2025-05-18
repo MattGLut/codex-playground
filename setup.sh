@@ -9,6 +9,14 @@ source venv/bin/activate
 
 # Upgrade pip and install required packages
 python -m pip install --upgrade pip
-pip install -r requirements.txt
+pip install fastapi \
+    uvicorn \
+    sqlalchemy \
+    jinja2 \
+    python-multipart \
+    "passlib[bcrypt]" \
+    pytest \
+    httpx \
+    itsdangerous
 
 echo "Environment setup complete. Activate with 'source venv/bin/activate'"
