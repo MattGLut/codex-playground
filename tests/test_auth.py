@@ -13,6 +13,7 @@ warnings.filterwarnings(
 
 from app.main import app
 from app.database import Base, get_db
+from app import models, auth
 
 engine = create_engine(
     "sqlite://",
@@ -55,6 +56,43 @@ def test_signup_and_login():
     assert response.headers["location"] == "/protected"
 
     # Access protected page using cookies from login
+    client.cookies.update(response.cookies)
+    response = client.get("/protected")
+    assert response.status_code == 200
+    assert "Congrats! You signed in!" in response.text
+
+
+def test_signup_success():
+    response = client.post(
+        "/signup",
+        data={"username": "bob", "password": "password"},
+        follow_redirects=False,
+    )
+    assert response.status_code == 303
+    assert response.headers["location"] == "/login"
+
+    with TestingSessionLocal() as db:
+        user = db.query(models.User).filter(models.User.username == "bob").first()
+        assert user is not None
+        assert auth.verify_password("password", user.hashed_password)
+
+
+def test_login_success():
+    # Create user by signing up first
+    client.post(
+        "/signup",
+        data={"username": "carol", "password": "topsecret"},
+        follow_redirects=False,
+    )
+
+    response = client.post(
+        "/login",
+        data={"username": "carol", "password": "topsecret"},
+        follow_redirects=False,
+    )
+    assert response.status_code == 303
+    assert response.headers["location"] == "/protected"
+
     client.cookies.update(response.cookies)
     response = client.get("/protected")
     assert response.status_code == 200
