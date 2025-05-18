@@ -7,3 +7,4 @@ passlib[bcrypt]
 pytest
 httpx
 itsdangerous
+psycopg2-binary
