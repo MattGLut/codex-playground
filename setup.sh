@@ -1,14 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
+# Print each command before executing to aid debugging
+set -x
 
-# Create Python virtual environment for the project
+echo "Starting environment setup..."
+
+echo "Creating Python virtual environment..."
 python3 -m venv venv
 
-# Activate the virtual environment
+echo "Activating virtual environment..."
 source venv/bin/activate
 
-# Upgrade pip and install required packages
+echo "Upgrading pip..."
 python -m pip install --upgrade pip
+echo "Installing Python dependencies..."
 pip install fastapi \
     uvicorn \
     sqlalchemy \
@@ -21,17 +26,24 @@ pip install fastapi \
     psycopg2-binary
 
 # # Install Docker if apt-get is available
+# echo "Checking for apt-get to install Docker..."
 # if command -v apt-get >/dev/null; then
+#     echo "Running apt-get update..."
 #     sudo apt-get update
+#     echo "Installing docker.io via apt-get..."
 #     sudo apt-get install -y docker.io
+# else
+#     echo "apt-get not found; skipping Docker installation."
 # fi
 
 # # Set database environment variables for PostgreSQL
+# echo "Configuring PostgreSQL environment variables..."
 # export TEST_DATABASE_URL="postgresql://postgres:postgres@localhost:5432/testdb"
 # export DATABASE_URL="$TEST_DATABASE_URL"
 # echo "Configured DATABASE_URL=$DATABASE_URL"
 
 # # Start a PostgreSQL container if Docker is available
+# echo "Checking for Docker to manage PostgreSQL..."
 # if command -v docker >/dev/null; then
 #     if ! docker ps --format '{{.Names}}' | grep -q '^codex-postgres$'; then
 #         echo "Starting PostgreSQL container..."
