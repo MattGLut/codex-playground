@@ -25,16 +25,18 @@ pip install fastapi \
     itsdangerous \
     psycopg2-binary
 
-# # Install Docker if apt-get is available
-# echo "Checking for apt-get to install Docker..."
-# if command -v apt-get >/dev/null; then
-#     echo "Running apt-get update..."
-#     sudo apt-get update
-#     echo "Installing docker.io via apt-get..."
-#     sudo apt-get install -y docker.io
-# else
-#     echo "apt-get not found; skipping Docker installation."
-# fi
+# Install Docker if apt-get is available
+echo "Checking for apt-get to install Docker..."
+if command -v apt-get >/dev/null; then
+    echo "Removing any apt.llvm.org sources..."
+    ./remove_llvm_source.sh
+    echo "Running apt-get update..."
+    sudo apt-get update
+    echo "Installing docker.io via apt-get..."
+    sudo apt-get install -y docker.io
+else
+    echo "apt-get not found; skipping Docker installation."
+fi
 
 # # Set database environment variables for PostgreSQL
 # echo "Configuring PostgreSQL environment variables..."
