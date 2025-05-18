@@ -5,7 +5,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy.orm import Session
 
 from . import auth, models, schemas
-from .database import Base, SessionLocal, engine
+from .database import Base, engine, get_db
 
 Base.metadata.create_all(bind=engine)
 
@@ -16,13 +16,6 @@ templates = Jinja2Templates(directory="templates")
 
 
 # Dependency
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 def get_current_user(request: Request, db: Session = Depends(get_db)):
@@ -37,7 +30,7 @@ def get_current_user(request: Request, db: Session = Depends(get_db)):
 
 @app.get("/signup", response_class=HTMLResponse)
 def signup_form(request: Request):
-    return templates.TemplateResponse("signup.html", {"request": request})
+    return templates.TemplateResponse(request, "signup.html")
 
 
 @app.post("/signup")
@@ -57,7 +50,7 @@ def signup(
 
 @app.get("/login", response_class=HTMLResponse)
 def login_form(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse(request, "login.html")
 
 
 @app.post("/login")
@@ -77,7 +70,9 @@ def login(
 @app.get("/protected", response_class=HTMLResponse)
 def protected(request: Request, user: models.User = Depends(get_current_user)):
     return templates.TemplateResponse(
-        "success.html", {"request": request, "username": user.username}
+        request,
+        "success.html",
+        {"username": user.username},
     )
 
 

@@ -1,13 +1,23 @@
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
+import warnings
+
+warnings.filterwarnings(
+    "ignore",
+    message="'crypt' is deprecated",
+    category=DeprecationWarning,
+    module="passlib",
+)
 
 from app.main import app
 from app.database import Base, get_db
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test_test.db"
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    "sqlite://",
+    connect_args={"check_same_thread": False},
+    poolclass=StaticPool,
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -31,7 +41,7 @@ def test_signup_and_login():
     response = client.post(
         "/signup",
         data={"username": "alice", "password": "secret"},
-        allow_redirects=False,
+        follow_redirects=False,
     )
     assert response.status_code == 303
 
@@ -39,13 +49,13 @@ def test_signup_and_login():
     response = client.post(
         "/login",
         data={"username": "alice", "password": "secret"},
-        allow_redirects=False,
+        follow_redirects=False,
     )
     assert response.status_code == 303
     assert response.headers["location"] == "/protected"
 
     # Access protected page using cookies from login
-    cookies = response.cookies
-    response = client.get("/protected", cookies=cookies)
+    client.cookies.update(response.cookies)
+    response = client.get("/protected")
     assert response.status_code == 200
     assert "Congrats! You signed in!" in response.text
