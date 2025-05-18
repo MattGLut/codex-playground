@@ -20,4 +20,10 @@ pip install fastapi \
     itsdangerous \
     psycopg2-binary
 
+# Install Docker if apt-get is available
+if command -v apt-get >/dev/null; then
+    sudo apt-get update
+    sudo apt-get install -y docker.io
+fi
+
 echo "Environment setup complete. Activate with 'source venv/bin/activate'"
