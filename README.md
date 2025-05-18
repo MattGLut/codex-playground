@@ -9,7 +9,9 @@ This repository contains a small FastAPI application with user authentication.
 - Protected page that greets authenticated users
 
 ## Development
-Run the setup script to create a virtual environment and install dependencies:
+Run the setup script to create a virtual environment and install dependencies.
+The script also cleans up any `apt.llvm.org` entries from the system's APT
+sources before installing Docker:
 
 ```bash
 ./setup.sh
