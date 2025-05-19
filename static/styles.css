@@ -67,6 +67,13 @@ body {
     text-align: center;
     margin: auto;
 }
+
+/* Center content of the success container */
+.success-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 input[type="text"],
 input[type="password"] {
     padding: 0.5rem;
