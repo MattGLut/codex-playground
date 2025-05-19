@@ -53,10 +53,17 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
-            sudo apt update && sudo apt install -y git docker.io docker-compose curl
-            sudo usermod -aG docker $USER
-            newgrp docker
-            docker load -i /tmp/codex-playground.tar.gz
-            docker stop codex-playground || true
-            docker rm codex-playground || true
-            docker run -d --name codex-playground -p 80:80 codex-playground
+            #!/bin/bash
+            set -e
+
+            # Ensure Docker is installed
+            if ! command -v docker >/dev/null 2>&1; then
+              sudo apt update
+              sudo apt install -y docker.io
+            fi
+
+            # Load image and run container
+            sudo docker load -i /tmp/codex-playground.tar.gz
+            sudo docker stop codex-playground || true
+            sudo docker rm codex-playground || true
+            sudo docker run -d --name codex-playground -p 80:80 codex-playground
