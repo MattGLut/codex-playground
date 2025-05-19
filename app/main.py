@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
+import httpx
 import time
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
@@ -89,3 +90,22 @@ def logout(request: Request):
 @app.get("/", response_class=HTMLResponse)
 def root(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
+
+
+@app.get("/forecast/nashville")
+def nashville_forecast():
+    """Return Nashville's 7 day weather forecast from Open-Meteo."""
+    response = httpx.get(
+        "https://api.open-meteo.com/v1/forecast",
+        params={
+            "latitude": 36.1627,
+            "longitude": -86.7816,
+            "daily": "temperature_2m_max,temperature_2m_min",
+            "forecast_days": 7,
+            "temperature_unit": "fahrenheit",
+            "timezone": "America/Chicago",
+        },
+        timeout=10,
+    )
+    response.raise_for_status()
+    return response.json()
