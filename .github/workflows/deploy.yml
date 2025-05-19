@@ -25,13 +25,7 @@ jobs:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
-          source: |
-            app
-            templates
-            Dockerfile
-            requirements.txt
-            setup.sh
-            docker-compose.yml
+          source: "."
           target: "/home/ubuntu/releases/${{ steps.release.outputs.timestamp }}"
 
       - name: SSH to EC2 and deploy
