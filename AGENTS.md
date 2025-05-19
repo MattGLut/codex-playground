@@ -8,3 +8,6 @@ The `setup.sh` file is used in creating codex-1 environments. I'm currently havi
 
 # Setting up the Env
 When working, assume there's a venv python environment with some pre-installed dependencies for you, as outlined in the setup.sh file.
+
+# Writing Code
+Don't forget to write tests.
