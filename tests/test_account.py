@@ -29,6 +29,8 @@ def test_account_page_and_link(client):
 
     response = client.get("/account")
     assert response.status_code == 200
+    assert '<div class="top-header">' in response.text
+    assert 'Codex Playground' in response.text
     assert "Account Settings" in response.text
     assert username in response.text
     assert '<div class="sidebar">' in response.text

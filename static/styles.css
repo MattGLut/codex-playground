@@ -15,10 +15,37 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
+}
+
+.page-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex: 1;
+}
+
+.top-header {
+    width: 100%;
+    background: var(--container-bg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.top-header .title {
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+.top-header a {
+    color: var(--link-color);
+    text-decoration: none;
 }
 .login-container,
 .signup-container,
