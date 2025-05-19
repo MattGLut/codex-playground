@@ -5,6 +5,10 @@ on:
     branches:
       - codex-1
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   create-pr:
     runs-on: ubuntu-latest
@@ -26,6 +30,7 @@ jobs:
 
       - name: Create PR using GitHub CLI
         run: |
+          gh auth status
           gh pr create \
             --title "codex-1 → main" \
             --body "This PR was auto-generated after a push to codex-1." \
