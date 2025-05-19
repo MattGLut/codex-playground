@@ -1,9 +1,4 @@
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
 .git
-.gitignore
 *.tar.gz
-Dockerfile
-.env
