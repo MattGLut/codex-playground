@@ -32,17 +32,15 @@ jobs:
         id: check_pr
         run: |
           if gh pr view --base main --head codex-1 > /dev/null 2>&1; then
-            echo "PR already exists"
-            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "exists=true" >> $GITHUB_ENV
           else
-            echo "No existing PR found"
-            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "exists=false" >> $GITHUB_ENV
           fi
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
 
       - name: Create PR using GitHub CLI
-        if: steps.check_pr.outputs.exists == 'false'
+        if: env.exists == 'false'
         run: |
           gh pr create \
             --title "codex-1 → main" \
