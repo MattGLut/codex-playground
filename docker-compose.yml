@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  codex:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: codex-playground
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    # Optional: if you use environment variables
+    # env_file:
+    #   - .env
