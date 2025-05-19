@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Nashville Detailed Forecast</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    {% include "header.html" %}
+    <div class="page-body">
+      {% include "sidebar.html" %}
+      <div class="forecast-container">
+        <h1>Nashville Detailed 7-Day Forecast</h1>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>High</th>
+              <th>Low</th>
+              <th>Rain %</th>
+              <th>Code</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for day in forecast %}
+          <tr>
+            <td>{{ day.date }}</td>
+            <td>{{ day.high }}&deg;F</td>
+            <td>{{ day.low }}&deg;F</td>
+            <td>{{ day.rain }}%</td>
+            <td>{{ day.code }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+    </div>
+    <script>
+      function applyDarkMode(on) {
+        if (on) {
+          document.body.classList.add('dark-mode');
+        } else {
+          document.body.classList.remove('dark-mode');
+        }
+      }
+
+      const dark = localStorage.getItem('darkMode') === 'true';
+      applyDarkMode(dark);
+
+      const toggle = document.getElementById('toggle-dark');
+      if (toggle) {
+        toggle.addEventListener('click', () => {
+          const enabled = document.body.classList.toggle('dark-mode');
+          localStorage.setItem('darkMode', enabled);
+        });
+      }
+    </script>
+  </body>
+</html>

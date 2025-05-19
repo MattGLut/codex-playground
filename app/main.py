@@ -136,6 +136,44 @@ def nashville_forecast(
     )
 
 
+@app.get("/forecast/nashville/detailed", response_class=HTMLResponse)
+def nashville_detailed_forecast(
+    request: Request, user: models.User = Depends(get_current_user)
+):
+    """Return a 7 day forecast with additional details."""
+    response = httpx.get(
+        "https://api.open-meteo.com/v1/forecast",
+        params={
+            "latitude": 36.1627,
+            "longitude": -86.7816,
+            "daily": (
+                "temperature_2m_max,temperature_2m_min,"
+                "precipitation_probability_max,weathercode"
+            ),
+            "forecast_days": 7,
+            "temperature_unit": "fahrenheit",
+            "timezone": "America/Chicago",
+        },
+        timeout=10,
+    )
+    response.raise_for_status()
+    data = response.json()
+    forecast = []
+    for i, date in enumerate(data["daily"]["time"]):
+        forecast.append(
+            {
+                "date": date,
+                "high": data["daily"]["temperature_2m_max"][i],
+                "low": data["daily"]["temperature_2m_min"][i],
+                "rain": data["daily"]["precipitation_probability_max"][i],
+                "code": data["daily"]["weathercode"][i],
+            }
+        )
+    return templates.TemplateResponse(
+        "forecast_detailed.html", {"request": request, "forecast": forecast}
+    )
+
+
 @app.get("/account", response_class=HTMLResponse)
 def account_page(request: Request, user: models.User = Depends(get_current_user)):
     return templates.TemplateResponse(
