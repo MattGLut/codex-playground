@@ -33,6 +33,7 @@ body {
 
 .top-header {
     width: 100%;
+    box-sizing: border-box;
     background: var(--container-bg);
     display: flex;
     justify-content: space-between;
