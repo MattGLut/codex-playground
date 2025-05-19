@@ -6,19 +6,47 @@
       :root {
         --bg-color: #f5f5f5;
         --text-color: #000;
+        --container-bg: white;
         --link-color: #007bff;
       }
       .dark-mode {
         --bg-color: #222;
         --text-color: #eee;
+        --container-bg: #333;
         --link-color: #66b0ff;
       }
       body {
         font-family: Arial, sans-serif;
         background-color: var(--bg-color);
         color: var(--text-color);
-        padding: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
         margin: 0;
+      }
+      .signup-container {
+        background: var(--container-bg);
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      input[type="text"],
+      input[type="password"] {
+        padding: 0.5rem;
+        margin: 0.25rem 0;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      input[type="submit"] {
+        margin-top: 1rem;
+        padding: 0.5rem 1rem;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
       }
       a {
         color: var(--link-color);
@@ -26,14 +54,24 @@
     </style>
   </head>
   <body>
-    <h1>Sign Up</h1>
-    <button id="toggle-dark" type="button">Toggle Dark Mode</button>
-    <form action="/signup" method="post">
-      <label>Username: <input type="text" name="username" /></label><br />
-      <label>Password: <input type="password" name="password" /></label><br />
-      <input type="submit" value="Sign Up" />
-    </form>
-    <p>Already have an account? <a href="/login">Login</a></p>
+    <div class="signup-container">
+      <h1>Sign Up</h1>
+      <button id="toggle-dark" type="button">Toggle Dark Mode</button>
+      <form action="/signup" method="post">
+        <label>
+          Username:
+          <input type="text" name="username" />
+        </label>
+        <br />
+        <label>
+          Password:
+          <input type="password" name="password" />
+        </label>
+        <br />
+        <input type="submit" value="Sign Up" />
+      </form>
+      <p>Already have an account? <a href="/login">Login</a></p>
+    </div>
     <script>
       function applyDarkMode(on) {
         if (on) {
