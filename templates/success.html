@@ -9,7 +9,14 @@
     <div class="success-container">
       <h1>Congrats! You signed in!</h1>
       <p>Welcome {{ username }}!</p>
-      <img id="cat-photo" src="{{ cat_url }}" alt="Random Cat" />
+      <img
+        id="cat-photo"
+        src="{{ cat_url }}"
+        alt="Random Cat"
+        width="300"
+        height="300"
+        style="object-fit: cover;"
+      />
     </div>
     <script>
       function applyDarkMode(on) {
