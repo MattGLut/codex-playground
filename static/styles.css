@@ -104,6 +104,8 @@ a {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     text-align: left;
     flex-shrink: 0;
+    /* Stretch the sidebar from below the top header to the page bottom */
+    min-height: calc(100vh - 4rem);
     height: 100%;
     display: flex;
     flex-direction: column;
