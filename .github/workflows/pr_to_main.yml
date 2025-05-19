@@ -1,0 +1,26 @@
+name: Auto PR to main from codex-1
+
+on:
+  push:
+    branches:
+      - codex-1
+
+jobs:
+  create-pr:
+    if: github.event.head_commit.message != 'Merge branch \'codex-1\' into main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repo
+        uses: actions/checkout@v3
+
+      - name: Create Pull Request to main
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          branch: codex-1
+          title: "Auto PR: codex-1 -> main"
+          body: |
+            This pull request was automatically created because a push occurred on `codex-1`.
+            Please review and merge when ready.
