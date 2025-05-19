@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 import httpx
 import time
 from fastapi.templating import Jinja2Templates
@@ -17,6 +18,7 @@ app.add_middleware(SessionMiddleware, secret_key="secret")
 templates = Jinja2Templates(directory="templates")
 
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
 # Dependency
 
 
