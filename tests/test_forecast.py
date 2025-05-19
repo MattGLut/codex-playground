@@ -1,10 +1,7 @@
 import httpx
 
-from fastapi.testclient import TestClient
-from app.main import app
 
-
-def test_nashville_forecast_endpoint(monkeypatch):
+def test_nashville_forecast_endpoint(monkeypatch, client):
     expected = {
         "daily": {
             "time": ["2025-05-20", "2025-05-21", "2025-05-22", "2025-05-23", "2025-05-24", "2025-05-25", "2025-05-26"],
@@ -31,8 +28,36 @@ def test_nashville_forecast_endpoint(monkeypatch):
 
     monkeypatch.setattr(httpx, "get", mock_get)
 
-    client = TestClient(app)
+    # create and login user
+    username = "weather"
+    password = "secret"
+    client.post(
+        "/signup",
+        data={"username": username, "password": password},
+        follow_redirects=False,
+    )
+
+    response = client.post(
+        "/login",
+        data={"username": username, "password": password},
+        follow_redirects=False,
+    )
+    assert response.status_code == 303
+    client.cookies.update(response.cookies)
+
     response = client.get("/forecast/nashville")
     assert response.status_code == 200
     assert "Nashville 7-Day Forecast" in response.text
     assert expected["daily"]["time"][0] in response.text
+
+
+def test_nashville_forecast_requires_login(monkeypatch, client):
+    """Ensure the forecast endpoint is protected."""
+
+    def fail_get(*args, **kwargs):
+        raise AssertionError("httpx.get should not be called when unauthorized")
+
+    monkeypatch.setattr(httpx, "get", fail_get)
+
+    response = client.get("/forecast/nashville")
+    assert response.status_code == 401
