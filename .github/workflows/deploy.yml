@@ -16,6 +16,9 @@ jobs:
         id: release
         run: echo "timestamp=$(date +'%Y%m%d-%H%M%S')" >> "$GITHUB_OUTPUT"
 
+      - name: List files in GitHub workspace
+        run: ls -R
+
       - name: Copy source code to EC2
         uses: appleboy/scp-action@v0.1.4
         with:
