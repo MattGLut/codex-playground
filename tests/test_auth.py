@@ -62,3 +62,24 @@ def test_login_success(client):
     response = client.get("/protected")
     assert response.status_code == 200
     assert "Congrats! You signed in!" in response.text
+
+
+def test_login_failure_redirect(client):
+    client.post(
+        "/signup",
+        data={"username": "eve", "password": "secret"},
+        follow_redirects=False,
+    )
+
+    response = client.post(
+        "/login",
+        data={"username": "eve", "password": "wrong"},
+        follow_redirects=False,
+    )
+    assert response.status_code == 303
+    assert response.headers["location"].startswith("/login")
+    assert "error=Invalid%20credentials" in response.headers["location"]
+
+    response = client.get(response.headers["location"])
+    assert response.status_code == 200
+    assert "Invalid credentials" in response.text
