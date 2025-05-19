@@ -12,21 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build Docker image
-        run: |
-          docker build -t codex-playground:latest .
-          docker save codex-playground:latest | gzip > codex-playground.tar.gz
-
-      - name: Copy Docker image to server
+      - name: Copy source code to EC2
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
-          source: "codex-playground.tar.gz"
+          source: "."
           target: "/home/ubuntu/codex-playground"
 
-      - name: Deploy via SSH with docker-compose embedded
+      - name: SSH to EC2 and deploy
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.DEPLOY_HOST }}
@@ -34,28 +29,25 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
             set -e
-            cd /home/ubuntu/codex-playground
+            cd ~/codex-playground
 
-            # Install Docker and Compose if missing
-            if ! command -v docker >/dev/null 2>&1; then
+            echo "✅ Checking Docker install..."
+            if ! command -v docker > /dev/null; then
+              echo "Installing Docker..."
               sudo apt update
-              sudo apt install -y docker.io docker-compose
+              sudo apt install -y docker.io
+              sudo usermod -aG docker $USER
             fi
 
-            # Recreate docker-compose.yml from CI
-            cat <<EOF > docker-compose.yml
-            version: '3.8'
-            services:
-              codex:
-                image: codex-playground:latest
-                container_name: codex-playground
-                ports:
-                  - "80:80"
-                restart: unless-stopped
-            EOF
+            echo "✅ Installing Docker Compose v2 if needed..."
+            mkdir -p ~/.docker/cli-plugins
+            if ! docker compose version > /dev/null 2>&1; then
+              curl -SL https://github.com/docker/compose/releases/download/v2.27.1/docker-compose-linux-x86_64 \
+                -o ~/.docker/cli-plugins/docker-compose
+              chmod +x ~/.docker/cli-plugins/docker-compose
+            fi
 
-            # Load Docker image
-            gunzip -c codex-playground.tar.gz | sudo docker load
-
-            # Bring up the container
-            sudo docker-compose up -d
+            echo "✅ Bringing up app with Docker Compose..."
+            docker compose down || true
+            docker compose build
+            docker compose up -d
