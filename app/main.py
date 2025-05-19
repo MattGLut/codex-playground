@@ -93,7 +93,9 @@ def root(request: Request):
 
 
 @app.get("/forecast/nashville", response_class=HTMLResponse)
-def nashville_forecast(request: Request):
+def nashville_forecast(
+    request: Request, user: models.User = Depends(get_current_user)
+):
     """Return Nashville's 7 day weather forecast from Open-Meteo as a web page."""
     response = httpx.get(
         "https://api.open-meteo.com/v1/forecast",
