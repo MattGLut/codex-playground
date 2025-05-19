@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+sqlalchemy
+jinja2
+python-multipart
+passlib[bcrypt]
+pytest
+httpx
+itsdangerous
+psycopg2-binary
