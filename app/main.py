@@ -9,12 +9,36 @@ from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy.orm import Session
 
 from . import auth, models, schemas
-from .database import Base, engine, get_db
+from .database import Base, engine, get_db, SessionLocal
 
 Base.metadata.create_all(bind=engine)
 
+
+def create_default_user(db: Session) -> None:
+    """Create a default user if one does not already exist."""
+    if not db.query(models.User).filter(models.User.username == "test").first():
+        hashed = auth.get_password_hash("test")
+        db.add(models.User(username="test", hashed_password=hashed))
+        db.commit()
+
+
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="secret")
+
+
+@app.on_event("startup")
+def startup_event() -> None:
+    """Run startup tasks like creating the default user."""
+    get_db_override = app.dependency_overrides.get(get_db, get_db)
+    db_gen = get_db_override()
+    db = next(db_gen)
+    try:
+        create_default_user(db)
+    finally:
+        try:
+            next(db_gen)
+        except StopIteration:
+            pass
 
 templates = Jinja2Templates(directory="templates")
 
