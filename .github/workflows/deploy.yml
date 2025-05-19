@@ -12,6 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Generate release timestamp
+        id: release
+        run: echo "timestamp=$(date +'%Y%m%d-%H%M%S')" >> "$GITHUB_OUTPUT"
+
       - name: Copy source code to EC2
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -19,7 +23,7 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           source: "."
-          target: "/home/ubuntu/codex-playground"
+          target: "/home/ubuntu/releases/${{ steps.release.outputs.timestamp }}"
 
       - name: SSH to EC2 and deploy
         uses: appleboy/ssh-action@v1.0.0
@@ -29,11 +33,11 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
             set -e
-            cd ~/codex-playground
+            timestamp="${{ steps.release.outputs.timestamp }}"
+            cd ~/releases/$timestamp
 
-            echo "✅ Checking Docker install..."
+            echo "✅ Installing Docker if missing..."
             if ! command -v docker > /dev/null; then
-              echo "Installing Docker..."
               sudo apt update
               sudo apt install -y docker.io
               sudo usermod -aG docker $USER
@@ -47,7 +51,17 @@ jobs:
               chmod +x ~/.docker/cli-plugins/docker-compose
             fi
 
-            echo "✅ Bringing up app with Docker Compose..."
+            echo "✅ Pointing 'current' symlink to $timestamp"
+            ln -sfn ~/releases/$timestamp ~/current
+
+            echo "✅ Bringing down any running containers"
+            cd ~/current
             docker compose down || true
+
+            echo "✅ Building and starting containers"
             docker compose build --no-cache
             docker compose up -d
+
+            echo "🧹 Cleaning up old releases (keeping 2)..."
+            cd ~/releases
+            ls -dt */ | tail -n +3 | xargs -r rm -rf
