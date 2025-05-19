@@ -22,6 +22,7 @@ def test_cat_photo_display_after_login(client):
     response = client.get("/protected")
     assert response.status_code == 200
     assert 'id="cat-photo"' in response.text
+    assert 'id="spinner"' in response.text
     match = re.search(r'<img[^>]*id="cat-photo"[^>]*>', response.text)
     assert match, "cat photo img tag not found"
     tag = match.group(0)
