@@ -66,3 +66,67 @@ def test_nashville_forecast_requires_login(monkeypatch, client):
     assert response.status_code == 303
     assert response.headers["location"].startswith("/login")
     assert "error=Please%20log%20in%20to%20access%20that%20page" in response.headers["location"]
+
+
+def test_nashville_detailed_forecast_endpoint(monkeypatch, client):
+    expected = {
+        "daily": {
+            "time": ["2025-05-20"],
+            "weathercode": [2],
+            "temperature_2m_max": [70],
+            "temperature_2m_min": [50],
+            "precipitation_probability_max": [30],
+        }
+    }
+
+    class MockResponse:
+        def __init__(self, data):
+            self._data = data
+
+        def json(self):
+            return self._data
+
+        def raise_for_status(self):
+            pass
+
+    def mock_get(url, params=None, timeout=None):
+        assert url == "https://api.open-meteo.com/v1/forecast"
+        assert "weathercode" in params["daily"]
+        return MockResponse(expected)
+
+    monkeypatch.setattr(httpx, "get", mock_get)
+
+    username = "detail"
+    password = "secret"
+    client.post(
+        "/signup",
+        data={"username": username, "password": password},
+        follow_redirects=False,
+    )
+
+    response = client.post(
+        "/login",
+        data={"username": username, "password": password},
+        follow_redirects=False,
+    )
+    assert response.status_code == 303
+    client.cookies.update(response.cookies)
+
+    response = client.get("/forecast/nashville/detailed")
+    assert response.status_code == 200
+    assert "Nashville Detailed Forecast" in response.text
+    assert expected["daily"]["time"][0] in response.text
+    assert "Partly cloudy" in response.text
+    assert "30%" in response.text
+
+
+def test_nashville_detailed_forecast_requires_login(monkeypatch, client):
+    def fail_get(*args, **kwargs):
+        raise AssertionError("httpx.get should not be called when unauthorized")
+
+    monkeypatch.setattr(httpx, "get", fail_get)
+
+    response = client.get("/forecast/nashville/detailed", follow_redirects=False)
+    assert response.status_code == 303
+    assert response.headers["location"].startswith("/login")
+    assert "error=Please%20log%20in%20to%20access%20that%20page" in response.headers["location"]
