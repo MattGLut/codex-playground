@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Success</title>
+    <title>Account Settings</title>
     <style>
       :root {
         --bg-color: #f5f5f5;
@@ -25,7 +25,7 @@
         height: 100vh;
         margin: 0;
       }
-      .success-container {
+      .account-container {
         background: var(--container-bg);
         padding: 2rem;
         border-radius: 8px;
@@ -38,16 +38,11 @@
     </style>
   </head>
   <body>
-    <div class="success-container">
-      <h1>Congrats! You signed in!</h1>
-      <p>Welcome {{ username }}!</p>
-      <img id="cat-photo" src="{{ cat_url }}" alt="Random Cat" />
+    <div class="account-container">
+      <h1>Account Settings</h1>
+      <p>Username: {{ username }}</p>
       <button id="toggle-dark" type="button">Toggle Dark Mode</button>
-      <p>
-        <a href="/forecast/nashville">Nashville Forecast</a>
-      </p>
-      <p><a href="/account">Account Settings</a></p>
-      <a href="/logout">Logout</a>
+      <p><a href="/protected">Back</a></p>
     </div>
     <script>
       function applyDarkMode(on) {
