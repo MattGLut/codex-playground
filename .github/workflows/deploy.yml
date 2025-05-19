@@ -56,12 +56,28 @@ jobs:
 
             echo "✅ Bringing down any running containers"
             cd ~/current
-            docker compose down || true
+
+            echo "🔍 Current directory:"
+            pwd
+
+            echo "🔍 Contents of ~/current:"
+            ls -la
+
+            echo "🔍 Checking for docker-compose.yml:"
+            if [ -f docker-compose.yml ]; then
+              echo "✅ Found docker-compose.yml"
+            else
+              echo "❌ docker-compose.yml NOT FOUND"
+              echo "‼️ Aborting deploy. Please check scp step or file location."
+              exit 1
+            fi
 
             echo "✅ Building and starting containers"
+            docker compose down || true
             docker compose build --no-cache
             docker compose up -d
 
             echo "🧹 Cleaning up old releases (keeping 2)..."
             cd ~/releases
             ls -dt */ | tail -n +3 | xargs -r rm -rf
+
