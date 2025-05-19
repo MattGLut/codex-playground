@@ -8,11 +8,12 @@
     {% include "header.html" %}
     <div class="page-body">
       {% include "sidebar.html" %}
-      <div class="account-container">
-        <h1>Account Settings</h1>
-        <p>Username: {{ username }}</p>
-        <button id="toggle-dark" type="button">Toggle Dark Mode</button>
-      </div>
+        <div class="account-container">
+          <h1>Account Settings</h1>
+          <p>Username: {{ username }}</p>
+          <button id="toggle-dark" type="button">Toggle Dark Mode</button>
+          <button id="toggle-detailed" type="button">Enable Detailed Forecast</button>
+        </div>
     </div>
     <script>
       function applyDarkMode(on) {
@@ -31,6 +32,24 @@
         toggle.addEventListener('click', () => {
           const enabled = document.body.classList.toggle('dark-mode');
           localStorage.setItem('darkMode', enabled);
+        });
+      }
+
+      function updateDetailedButton() {
+        const enabled = localStorage.getItem('detailedForecast') === 'true';
+        const button = document.getElementById('toggle-detailed');
+        if (button) {
+          button.textContent = enabled ? 'Disable Detailed Forecast' : 'Enable Detailed Forecast';
+        }
+      }
+
+      updateDetailedButton();
+      const detailedToggle = document.getElementById('toggle-detailed');
+      if (detailedToggle) {
+        detailedToggle.addEventListener('click', () => {
+          const enabled = localStorage.getItem('detailedForecast') === 'true';
+          localStorage.setItem('detailedForecast', !enabled);
+          updateDetailedButton();
         });
       }
     </script>
