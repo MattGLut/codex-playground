@@ -121,3 +121,10 @@ def nashville_forecast(
     return templates.TemplateResponse(
         "forecast.html", {"request": request, "forecast": forecast}
     )
+
+
+@app.get("/account", response_class=HTMLResponse)
+def account_page(request: Request, user: models.User = Depends(get_current_user)):
+    return templates.TemplateResponse(
+        "account.html", {"request": request, "username": user.username}
+    )
