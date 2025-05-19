@@ -80,3 +80,8 @@ def protected(request: Request, user: models.User = Depends(get_current_user)):
 def logout(request: Request):
     request.session.clear()
     return RedirectResponse(url="/login", status_code=303)
+
+
+@app.get("/", response_class=HTMLResponse)
+def root(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
