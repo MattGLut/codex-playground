@@ -136,6 +136,19 @@ def nashville_forecast(
     )
 
 
+@app.get("/dogs", response_class=HTMLResponse)
+def random_dog(
+    request: Request, user: models.User = Depends(get_current_user)
+):
+    """Display a random dog photo."""
+    dog_url = f"https://placedog.net/500?{int(time.time())}"
+    return templates.TemplateResponse(
+        request,
+        "dog.html",
+        {"dog_url": dog_url},
+    )
+
+
 @app.get("/account", response_class=HTMLResponse)
 def account_page(request: Request, user: models.User = Depends(get_current_user)):
     return templates.TemplateResponse(
