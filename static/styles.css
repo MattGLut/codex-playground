@@ -16,10 +16,11 @@ body {
     color: var(--text-color);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     min-height: 100vh;
     margin: 0;
+    padding-top: 4rem;
 }
 
 .page-body {
@@ -38,6 +39,10 @@ body {
     align-items: center;
     padding: 1rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
 }
 .top-header .title {
     font-weight: bold;

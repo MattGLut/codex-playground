@@ -62,5 +62,7 @@ def test_nashville_forecast_requires_login(monkeypatch, client):
 
     monkeypatch.setattr(httpx, "get", fail_get)
 
-    response = client.get("/forecast/nashville")
-    assert response.status_code == 401
+    response = client.get("/forecast/nashville", follow_redirects=False)
+    assert response.status_code == 303
+    assert response.headers["location"].startswith("/login")
+    assert "error=Please%20log%20in%20to%20access%20that%20page" in response.headers["location"]
