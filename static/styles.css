@@ -25,14 +25,16 @@ body {
 
 .page-body {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: flex-start;
     width: 100%;
     flex: 1;
+    gap: 2rem;
 }
 
 .top-header {
     width: 100%;
+    box-sizing: border-box;
     background: var(--container-bg);
     display: flex;
     justify-content: space-between;
@@ -93,6 +95,11 @@ a {
 }
 
 .sidebar {
-    margin-right: 2rem;
+    width: 200px;
+    background: var(--container-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     text-align: left;
+    flex-shrink: 0;
 }
