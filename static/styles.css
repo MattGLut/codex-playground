@@ -59,3 +59,8 @@ th, td {
 a {
     color: var(--link-color);
 }
+
+.sidebar {
+    margin-right: 2rem;
+    text-align: left;
+}

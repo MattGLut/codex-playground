@@ -5,11 +5,11 @@
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
+    {% include "sidebar.html" %}
     <div class="account-container">
       <h1>Account Settings</h1>
       <p>Username: {{ username }}</p>
       <button id="toggle-dark" type="button">Toggle Dark Mode</button>
-      <p><a href="/protected">Back</a></p>
     </div>
     <script>
       function applyDarkMode(on) {

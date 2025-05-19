@@ -49,6 +49,7 @@ def test_nashville_forecast_endpoint(monkeypatch, client):
     assert response.status_code == 200
     assert "Nashville 7-Day Forecast" in response.text
     assert expected["daily"]["time"][0] in response.text
+    assert '<div class="sidebar">' in response.text
 
 
 def test_nashville_forecast_requires_login(monkeypatch, client):
