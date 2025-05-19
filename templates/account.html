@@ -5,11 +5,14 @@
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
-    {% include "sidebar.html" %}
-    <div class="account-container">
-      <h1>Account Settings</h1>
-      <p>Username: {{ username }}</p>
-      <button id="toggle-dark" type="button">Toggle Dark Mode</button>
+    {% include "header.html" %}
+    <div class="page-body">
+      {% include "sidebar.html" %}
+      <div class="account-container">
+        <h1>Account Settings</h1>
+        <p>Username: {{ username }}</p>
+        <button id="toggle-dark" type="button">Toggle Dark Mode</button>
+      </div>
     </div>
     <script>
       function applyDarkMode(on) {
