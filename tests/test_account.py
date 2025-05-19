@@ -14,8 +14,10 @@ def login_helper(client, username, password):
 
 
 def test_account_requires_login(client):
-    response = client.get("/account")
-    assert response.status_code == 401
+    response = client.get("/account", follow_redirects=False)
+    assert response.status_code == 303
+    assert response.headers["location"].startswith("/login")
+    assert "error=Please%20log%20in%20to%20access%20that%20page" in response.headers["location"]
 
 
 def test_account_page_and_link(client):

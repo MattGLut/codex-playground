@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.exception_handlers import http_exception_handler as fastapi_http_exception_handler
 from fastapi.staticfiles import StaticFiles
 import httpx
 import time
@@ -19,6 +20,16 @@ templates = Jinja2Templates(directory="templates")
 
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+# Redirect unauthorized access to login page
+
+
+@app.exception_handler(HTTPException)
+async def custom_http_exception_handler(request: Request, exc: HTTPException):
+    """Redirect unauthorized users to the login page with a warning."""
+    if exc.status_code == status.HTTP_401_UNAUTHORIZED:
+        url = app.url_path_for("login_form") + "?error=Please%20log%20in%20to%20access%20that%20page"
+        return RedirectResponse(url=url, status_code=status.HTTP_303_SEE_OTHER)
+    return await fastapi_http_exception_handler(request, exc)
 # Dependency
 
 
