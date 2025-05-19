@@ -17,7 +17,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Log token status (safe)
+      - name: Check if PAT_TOKEN is set
         run: |
           if [ -z "${GH_TOKEN}" ]; then
             echo "❌ PAT_TOKEN is not set!"
@@ -28,7 +28,21 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
 
+      - name: Check if PR already exists
+        id: check_pr
+        run: |
+          if gh pr view --base main --head codex-1 > /dev/null 2>&1; then
+            echo "PR already exists"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No existing PR found"
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+
       - name: Create PR using GitHub CLI
+        if: steps.check_pr.outputs.exists == 'false'
         run: |
           gh pr create \
             --title "codex-1 → main" \
