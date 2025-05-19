@@ -92,9 +92,11 @@ def root(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
-@app.get("/forecast/nashville")
-def nashville_forecast():
-    """Return Nashville's 7 day weather forecast from Open-Meteo."""
+@app.get("/forecast/nashville", response_class=HTMLResponse)
+def nashville_forecast(
+    request: Request, user: models.User = Depends(get_current_user)
+):
+    """Return Nashville's 7 day weather forecast from Open-Meteo as a web page."""
     response = httpx.get(
         "https://api.open-meteo.com/v1/forecast",
         params={
@@ -108,4 +110,14 @@ def nashville_forecast():
         timeout=10,
     )
     response.raise_for_status()
-    return response.json()
+    data = response.json()
+    forecast = list(
+        zip(
+            data["daily"]["time"],
+            data["daily"]["temperature_2m_max"],
+            data["daily"]["temperature_2m_min"],
+        )
+    )
+    return templates.TemplateResponse(
+        "forecast.html", {"request": request, "forecast": forecast}
+    )

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Success</title>
+    <title>Nashville Forecast</title>
     <style>
       :root {
         --bg-color: #f5f5f5;
@@ -25,12 +25,21 @@
         height: 100vh;
         margin: 0;
       }
-      .success-container {
+      .forecast-container {
         background: var(--container-bg);
         padding: 2rem;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         text-align: center;
+      }
+      table {
+        margin-top: 1rem;
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th, td {
+        border: 1px solid #ccc;
+        padding: 0.5rem;
       }
       a {
         color: var(--link-color);
@@ -38,15 +47,20 @@
     </style>
   </head>
   <body>
-    <div class="success-container">
-      <h1>Congrats! You signed in!</h1>
-      <p>Welcome {{ username }}!</p>
-      <img id="cat-photo" src="{{ cat_url }}" alt="Random Cat" />
+    <div class="forecast-container">
+      <h1>Nashville 7-Day Forecast</h1>
       <button id="toggle-dark" type="button">Toggle Dark Mode</button>
-      <p>
-        <a href="/forecast/nashville">Nashville Forecast</a>
-      </p>
-      <a href="/logout">Logout</a>
+      <table>
+        <thead>
+          <tr><th>Date</th><th>High</th><th>Low</th></tr>
+        </thead>
+        <tbody>
+          {% for date, high, low in forecast %}
+          <tr><td>{{ date }}</td><td>{{ high }}&deg;F</td><td>{{ low }}&deg;F</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p><a href="/">Back to Login</a></p>
     </div>
     <script>
       function applyDarkMode(on) {
