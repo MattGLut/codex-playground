@@ -21,6 +21,8 @@ jobs:
           else
             echo "✅ GITHUB_TOKEN is present."
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create PR using GitHub CLI
         run: |
