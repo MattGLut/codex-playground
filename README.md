@@ -8,6 +8,7 @@ This repository contains a small FastAPI application with user authentication.
 - Optional PostgreSQL support via the `DATABASE_URL` environment variable
 - Protected page that greets authenticated users
 - Dark mode toggle available from the account settings page
+- Random dog photo page for logged in users
 
 ## Development
 Run the setup script to create a virtual environment and install dependencies:
