@@ -1,4 +1,4 @@
-name: Auto PR to main from codex-1
+name: Auto PR: codex-1 → main
 
 on:
   pull_request:
@@ -13,10 +13,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the repo
+      - name: Checkout codex-1
         uses: actions/checkout@v3
+        with:
+          ref: codex-1
 
-      - name: Create Pull Request to main
+      - name: Create PR into main
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -24,5 +26,4 @@ jobs:
           branch: codex-1
           title: "Auto PR: codex-1 → main"
           body: |
-            This pull request was automatically created after a PR was merged into `codex-1`.
-            Please review and merge to sync changes into `main`.
+            This PR was auto-generated after a PR was merged into `codex-1`.
