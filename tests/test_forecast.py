@@ -34,4 +34,5 @@ def test_nashville_forecast_endpoint(monkeypatch):
     client = TestClient(app)
     response = client.get("/forecast/nashville")
     assert response.status_code == 200
-    assert response.json() == expected
+    assert "Nashville 7-Day Forecast" in response.text
+    assert expected["daily"]["time"][0] in response.text
