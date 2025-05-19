@@ -50,7 +50,8 @@ def signup(
 
 @app.get("/login", response_class=HTMLResponse)
 def login_form(request: Request):
-    return templates.TemplateResponse(request, "login.html")
+    error = request.query_params.get("error")
+    return templates.TemplateResponse(request, "login.html", {"error": error})
 
 
 @app.post("/login")
@@ -62,7 +63,8 @@ def login(
 ):
     user = db.query(models.User).filter(models.User.username == username).first()
     if not user or not auth.verify_password(password, user.hashed_password):
-        raise HTTPException(status_code=400, detail="Invalid credentials")
+        url = app.url_path_for("login_form") + "?error=Invalid%20credentials"
+        return RedirectResponse(url=url, status_code=303)
     request.session["user_id"] = user.id
     return RedirectResponse(url="/protected", status_code=303)
 

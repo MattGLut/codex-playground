@@ -57,6 +57,9 @@
     <div class="login-container">
       <h1>Login</h1>
       <button id="toggle-dark" type="button">Toggle Dark Mode</button>
+      {% if error %}
+      <p style="color: red">{{ error }}</p>
+      {% endif %}
       <form action="/login" method="post">
         <label>
           Username:
