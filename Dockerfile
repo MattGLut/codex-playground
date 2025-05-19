@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy only the necessary folders and files
 COPY app /app/app
 COPY templates /app/templates
+COPY static /app/static
 COPY setup.sh /app/setup.sh
 
 # Optionally copy other files like README or tests if needed
