@@ -1,13 +1,15 @@
 name: Auto PR to main from codex-1
 
 on:
-  push:
+  pull_request:
     branches:
       - codex-1
+    types:
+      - closed
 
 jobs:
   create-pr:
-    if: github.event.head_commit.message != 'Merge branch \'codex-1\' into main'
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
@@ -20,7 +22,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: main
           branch: codex-1
-          title: "Auto PR: codex-1 -> main"
+          title: "Auto PR: codex-1 → main"
           body: |
-            This pull request was automatically created because a push occurred on `codex-1`.
-            Please review and merge when ready.
+            This pull request was automatically created after a PR was merged into `codex-1`.
+            Please review and merge to sync changes into `main`.
