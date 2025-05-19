@@ -1,4 +1,4 @@
-name: Auto PR: codex-1 → main
+name: codex-1 → main
 
 on:
   pull_request:
@@ -9,8 +9,8 @@ on:
 
 jobs:
   create-pr:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
 
     steps:
       - name: Checkout codex-1
