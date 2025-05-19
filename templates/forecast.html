@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
+    {% include "sidebar.html" %}
     <div class="forecast-container">
       <h1>Nashville 7-Day Forecast</h1>
       <button id="toggle-dark" type="button">Toggle Dark Mode</button>
@@ -18,7 +19,6 @@
           {% endfor %}
         </tbody>
       </table>
-      <p><a href="/">Back to Login</a></p>
     </div>
     <script>
       function applyDarkMode(on) {
