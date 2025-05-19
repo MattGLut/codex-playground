@@ -1,30 +1,40 @@
 name: codex-1 → main
 
 on:
-  pull_request:
+  push:
     branches:
       - codex-1
-    types:
-      - closed
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   create-pr:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
 
     steps:
-      - name: Checkout codex-1
+      - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          ref: codex-1
-          fetch-depth: 0
 
-      - name: Create PR into main
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: main
-          branch: codex-1
-          title: "Auto PR: codex-1 → main"
-          body: |
-            This PR was auto-generated after a PR was merged into `codex-1`.
+      - name: Log token status (safe)
+        run: |
+          if [ -z "${GH_TOKEN}" ]; then
+            echo "❌ PAT_TOKEN is not set!"
+            exit 1
+          else
+            echo "✅ PAT_TOKEN is set."
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+
+      - name: Create PR using GitHub CLI
+        run: |
+          gh pr create \
+            --title "codex-1 → main" \
+            --body "This PR was auto-generated after a push to codex-1." \
+            --base main \
+            --head codex-1 \
+            --repo ${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
