@@ -1,23 +1,19 @@
 name: codex-1 → main
 
 on:
-  pull_request:
+  push:
     branches:
       - codex-1
-    types:
-      - closed
 
 jobs:
   create-pr:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
 
     steps:
       - name: Checkout codex-1
         uses: actions/checkout@v3
         with:
           ref: codex-1
-          fetch-depth: 0
 
       - name: Create PR into main
         uses: peter-evans/create-pull-request@v5
@@ -25,6 +21,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: main
           branch: codex-1
-          title: "Auto PR: codex-1 → main"
+          title: "codex-1 → main"
           body: |
             This PR was auto-generated after a PR was merged into `codex-1`.
