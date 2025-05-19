@@ -12,58 +12,50 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Verify deploy secrets
-        run: |
-          missing=0
-          [ -z "$DEPLOY_KEY" ] && echo "DEPLOY_KEY is missing" && missing=1
-          [ -z "$DEPLOY_HOST" ] && echo "DEPLOY_HOST is missing" && missing=1
-          [ -z "$DEPLOY_USER" ] && echo "DEPLOY_USER is missing" && missing=1
-          if [ "$missing" -eq 1 ]; then
-            echo "One or more required secrets are not available." >&2
-            exit 1
-          else
-            echo "All deploy secrets are available."
-          fi
-        env:
-          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
-          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-
-      - name: Set up Docker
-        uses: docker/setup-buildx-action@v2
-
       - name: Build Docker image
         run: |
-          docker build -t codex-playground .
-          docker save codex-playground | gzip > codex-playground.tar.gz
+          docker build -t codex-playground:latest .
+          docker save codex-playground:latest | gzip > codex-playground.tar.gz
 
-      - name: Copy image to server
+      - name: Copy Docker image to server
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           source: "codex-playground.tar.gz"
-          target: "/tmp/codex-playground.tar.gz"
+          target: "/home/ubuntu/codex-playground"
 
-      - name: Deploy on server
+      - name: Deploy via SSH with docker-compose embedded
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
-            #!/bin/bash
             set -e
+            cd /home/ubuntu/codex-playground
 
-            # Ensure Docker is installed
+            # Install Docker and Compose if missing
             if ! command -v docker >/dev/null 2>&1; then
               sudo apt update
-              sudo apt install -y docker.io
+              sudo apt install -y docker.io docker-compose
             fi
 
-            # Load image and run container
-            sudo docker load -i /tmp/codex-playground.tar.gz
-            sudo docker stop codex-playground || true
-            sudo docker rm codex-playground || true
-            sudo docker run -d --name codex-playground -p 80:80 codex-playground
+            # Recreate docker-compose.yml from CI
+            cat <<EOF > docker-compose.yml
+            version: '3.8'
+            services:
+              codex:
+                image: codex-playground:latest
+                container_name: codex-playground
+                ports:
+                  - "80:80"
+                restart: unless-stopped
+            EOF
+
+            # Load Docker image
+            gunzip -c codex-playground.tar.gz | sudo docker load
+
+            # Bring up the container
+            sudo docker-compose up -d
