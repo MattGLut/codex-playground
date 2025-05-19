@@ -1,49 +1,8 @@
-from fastapi.testclient import TestClient
-import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
-import warnings
-
-warnings.filterwarnings(
-    "ignore",
-    message="'crypt' is deprecated",
-    category=DeprecationWarning,
-    module="passlib",
-)
-
-from app.main import app
-from app.database import Base, get_db
 from app import models, auth
-
-TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
-
-if TEST_DATABASE_URL:
-    engine = create_engine(TEST_DATABASE_URL)
-else:
-    engine = create_engine(
-        "sqlite://",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base.metadata.create_all(bind=engine)
+from conftest import TestingSessionLocal
 
 
-def override_get_db():
-    db = TestingSessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-app.dependency_overrides[get_db] = override_get_db
-
-client = TestClient(app)
-
-
-def test_signup_and_login():
+def test_signup_and_login(client):
     # Sign up
     response = client.post(
         "/signup",
@@ -68,7 +27,7 @@ def test_signup_and_login():
     assert "Congrats! You signed in!" in response.text
 
 
-def test_signup_success():
+def test_signup_success(client):
     response = client.post(
         "/signup",
         data={"username": "bob", "password": "password"},
@@ -83,7 +42,7 @@ def test_signup_success():
         assert auth.verify_password("password", user.hashed_password)
 
 
-def test_login_success():
+def test_login_success(client):
     # Create user by signing up first
     client.post(
         "/signup",

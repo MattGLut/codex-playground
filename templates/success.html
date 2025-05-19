@@ -2,10 +2,64 @@
 <html>
   <head>
     <title>Success</title>
+    <style>
+      :root {
+        --bg-color: #f5f5f5;
+        --text-color: #000;
+        --container-bg: white;
+        --link-color: #007bff;
+      }
+      .dark-mode {
+        --bg-color: #222;
+        --text-color: #eee;
+        --container-bg: #333;
+        --link-color: #66b0ff;
+      }
+      body {
+        font-family: Arial, sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .success-container {
+        background: var(--container-bg);
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      a {
+        color: var(--link-color);
+      }
+    </style>
   </head>
   <body>
-    <h1>Congrats! You signed in!</h1>
-    <p>Welcome {{ username }}!</p>
-    <a href="/logout">Logout</a>
+    <div class="success-container">
+      <h1>Congrats! You signed in!</h1>
+      <p>Welcome {{ username }}!</p>
+      <button id="toggle-dark" type="button">Toggle Dark Mode</button>
+      <a href="/logout">Logout</a>
+    </div>
+    <script>
+      function applyDarkMode(on) {
+        if (on) {
+          document.body.classList.add('dark-mode');
+        } else {
+          document.body.classList.remove('dark-mode');
+        }
+      }
+
+      const dark = localStorage.getItem('darkMode') === 'true';
+      applyDarkMode(dark);
+
+      document.getElementById('toggle-dark').addEventListener('click', () => {
+        const enabled = document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', enabled);
+      });
+    </script>
   </body>
 </html>
