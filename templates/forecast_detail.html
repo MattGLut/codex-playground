@@ -46,6 +46,10 @@
       const dark = localStorage.getItem('darkMode') === 'true';
       applyDarkMode(dark);
 
+      if (localStorage.getItem('detailedForecast') !== 'true') {
+        window.location.replace('/forecast/nashville');
+      }
+
       const toggle = document.getElementById('toggle-dark');
       if (toggle) {
         toggle.addEventListener('click', () => {
