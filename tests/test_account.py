@@ -31,3 +31,4 @@ def test_account_page_and_link(client):
     assert response.status_code == 200
     assert "Account Settings" in response.text
     assert username in response.text
+    assert '<div class="sidebar">' in response.text

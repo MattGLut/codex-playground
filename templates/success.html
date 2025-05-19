@@ -5,16 +5,12 @@
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
+    {% include "sidebar.html" %}
     <div class="success-container">
       <h1>Congrats! You signed in!</h1>
       <p>Welcome {{ username }}!</p>
       <img id="cat-photo" src="{{ cat_url }}" alt="Random Cat" />
       <button id="toggle-dark" type="button">Toggle Dark Mode</button>
-      <p>
-        <a href="/forecast/nashville">Nashville Forecast</a>
-      </p>
-      <p><a href="/account">Account Settings</a></p>
-      <a href="/logout">Logout</a>
     </div>
     <script>
       function applyDarkMode(on) {
