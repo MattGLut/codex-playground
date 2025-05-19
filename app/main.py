@@ -1,5 +1,6 @@
 from fastapi import Depends, FastAPI, Form, HTTPException, Request, status
 from fastapi.responses import HTMLResponse, RedirectResponse
+import time
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy.orm import Session
@@ -71,10 +72,11 @@ def login(
 
 @app.get("/protected", response_class=HTMLResponse)
 def protected(request: Request, user: models.User = Depends(get_current_user)):
+    cat_url = f"https://cataas.com/cat?{int(time.time())}"
     return templates.TemplateResponse(
         request,
         "success.html",
-        {"username": user.username},
+        {"username": user.username, "cat_url": cat_url},
     )
 
 
