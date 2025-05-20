@@ -14,7 +14,7 @@ def test_turtle_url(monkeypatch):
     monkeypatch.setattr("time.time", lambda: 456)
     animal, url = handler.get_animal_url("turtle")
     assert animal == "turtle"
-    assert url == "https://loremflickr.com/300/300/turtle?456"
+    assert url == "https://source.unsplash.com/300x300/?turtle&456"
 
 
 def test_default_cat(monkeypatch):
