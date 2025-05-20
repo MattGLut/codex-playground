@@ -1,16 +1,4 @@
-def login_helper(client, username, password):
-    client.post(
-        "/signup",
-        data={"username": username, "password": password},
-        follow_redirects=False,
-    )
-    response = client.post(
-        "/login",
-        data={"username": username, "password": password},
-        follow_redirects=False,
-    )
-    assert response.status_code == 303
-    client.cookies.update(response.cookies)
+from conftest import login_helper
 
 
 def test_account_requires_login(client):
