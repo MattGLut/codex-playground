@@ -25,25 +25,6 @@
       </form>
       <p>Need an account? <a href="/signup">Sign up</a></p>
     </div>
-    <script>
-      function applyDarkMode(on) {
-        if (on) {
-          document.body.classList.add('dark-mode');
-        } else {
-          document.body.classList.remove('dark-mode');
-        }
-      }
-
-      const dark = localStorage.getItem('darkMode') === 'true';
-      applyDarkMode(dark);
-
-      const toggle = document.getElementById('toggle-dark');
-      if (toggle) {
-        toggle.addEventListener('click', () => {
-          const enabled = document.body.classList.toggle('dark-mode');
-          localStorage.setItem('darkMode', enabled);
-        });
-      }
-    </script>
+    <script src="/static/darkmode.js"></script>
   </body>
 </html>
