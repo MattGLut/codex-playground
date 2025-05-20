@@ -22,27 +22,6 @@
 {% endblock %}
 {% block scripts %}
 <script>
-  function applyDarkMode(on) {
-    if (on) {
-      document.body.classList.add('dark-mode');
-    } else {
-      document.body.classList.remove('dark-mode');
-    }
-  }
-
-  const dark = localStorage.getItem('darkMode') === 'true';
-  applyDarkMode(dark);
-
-  const toggle = document.getElementById('toggle-dark');
-  if (toggle) {
-    toggle.checked = dark;
-    toggle.addEventListener('change', () => {
-      const enabled = toggle.checked;
-      applyDarkMode(enabled);
-      localStorage.setItem('darkMode', enabled);
-    });
-  }
-
   function applyDetailedState() {
     const enabled = localStorage.getItem('detailedForecast') === 'true';
     const box = document.getElementById('toggle-detailed');
