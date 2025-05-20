@@ -7,11 +7,13 @@ from sqlalchemy.orm import Session
 
 from . import auth, models
 from .database import Base, engine, get_db
+from .user_settings import get_user_settings
 from .routes import (
     auth as auth_routes,
     forecast as forecast_routes,
     pages as pages_routes,
     suggestions as suggestions_routes,
+    settings as settings_routes,
 )
 from .dependencies import templates
 
@@ -22,8 +24,10 @@ def create_default_user(db: Session) -> None:
     """Create a default user if one does not already exist."""
     if not db.query(models.User).filter(models.User.username == "test").first():
         hashed = auth.get_password_hash("test")
-        db.add(models.User(username="test", hashed_password=hashed))
+        user = models.User(username="test", hashed_password=hashed)
+        db.add(user)
         db.commit()
+        get_user_settings(db, user.id)
 
 
 app = FastAPI()
@@ -60,3 +64,4 @@ app.include_router(auth_routes.router)
 app.include_router(forecast_routes.router)
 app.include_router(pages_routes.router)
 app.include_router(suggestions_routes.router)
+app.include_router(settings_routes.router)

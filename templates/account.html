@@ -6,14 +6,14 @@
     <p>Username: {{ username }}</p>
     <div class="toggle-row">
       <label class="switch">
-        <input type="checkbox" id="toggle-dark" />
+        <input type="checkbox" id="toggle-dark" {% if dark_mode %}checked{% endif %} />
         <span class="slider round"></span>
       </label>
       <span>Dark Mode</span>
     </div>
     <div class="toggle-row">
       <label class="switch">
-        <input type="checkbox" id="toggle-detailed" />
+        <input type="checkbox" id="toggle-detailed" {% if detailed %}checked{% endif %} />
         <span class="slider round"></span>
       </label>
       <span>Detailed Forecast</span>
@@ -22,21 +22,35 @@
 {% endblock %}
 {% block scripts %}
 <script>
-  function applyDetailedState() {
-    const enabled = localStorage.getItem('detailedForecast') === 'true';
-    const box = document.getElementById('toggle-detailed');
-    if (box) {
-      box.checked = enabled;
-    }
-  }
+  document.addEventListener('DOMContentLoaded', () => {
+    localStorage.setItem('darkMode', {{ 'true' if dark_mode else 'false' }});
+    localStorage.setItem('detailedForecast', {{ 'true' if detailed else 'false' }});
 
-  applyDetailedState();
-  const detailedToggle = document.getElementById('toggle-detailed');
-  if (detailedToggle) {
-    detailedToggle.addEventListener('change', () => {
-      const enabled = detailedToggle.checked;
-      localStorage.setItem('detailedForecast', enabled);
-    });
-  }
+    const darkToggle = document.getElementById('toggle-dark');
+    if (darkToggle) {
+      darkToggle.addEventListener('change', () => {
+        const enabled = darkToggle.checked;
+        localStorage.setItem('darkMode', enabled);
+        fetch('/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'dark_mode=' + enabled
+        });
+      });
+    }
+
+    const detailedToggle = document.getElementById('toggle-detailed');
+    if (detailedToggle) {
+      detailedToggle.addEventListener('change', () => {
+        const enabled = detailedToggle.checked;
+        localStorage.setItem('detailedForecast', enabled);
+        fetch('/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'detailed_forecast=' + enabled
+        });
+      });
+    }
+  });
 </script>
 {% endblock %}
