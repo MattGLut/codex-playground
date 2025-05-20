@@ -27,7 +27,9 @@ def test_signup_and_login(client):
     assert "Congrats! You signed in!" in response.text
     assert '<div class="top-header">' in response.text
     assert 'Codex Playground' in response.text
+    assert '<a href="/protected">Codex Playground</a>' in response.text
     assert '<div class="sidebar">' in response.text
+    assert '<a href="/protected">Home</a>' not in response.text
     assert '<a href="/forecast/nashville">' in response.text
 def test_signup_success(client):
     response = client.post(
