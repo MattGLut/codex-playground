@@ -63,7 +63,8 @@ body {
 .signup-container,
 .success-container,
 .account-container,
-.forecast-container {
+.forecast-container,
+.suggestion-container {
     background: var(--container-bg);
     padding: 2rem;
     border-radius: 8px;

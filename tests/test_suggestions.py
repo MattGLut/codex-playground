@@ -1,5 +1,6 @@
 from conftest import login_helper, TestingSessionLocal
 from app import models
+from app.dependencies import format_central
 
 
 def test_suggestions_requires_login(client):
@@ -19,6 +20,14 @@ def test_suggestion_submission_and_display(client):
     assert response.status_code == 303
     assert response.headers["location"] == "/suggestions"
 
+    with TestingSessionLocal() as db:
+        suggestion = (
+            db.query(models.Suggestion)
+            .order_by(models.Suggestion.id.desc())
+            .first()
+        )
+        timestamp_str = format_central(suggestion.timestamp)
+
     client.get("/logout")
 
     # user2 views the suggestion
@@ -27,5 +36,7 @@ def test_suggestion_submission_and_display(client):
     assert response.status_code == 200
     assert "hello world" in response.text
     assert "alice" in response.text
+    assert timestamp_str in response.text
     assert "Suggestion Box" in response.text
     assert '<a href="/suggestions">Suggestion Box</a>' in response.text
+    assert '<div class="suggestion-container">' in response.text

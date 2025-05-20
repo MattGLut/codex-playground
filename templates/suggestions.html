@@ -19,7 +19,7 @@
         {% for s in suggestions %}
         <tr>
           <td>{{ s.user.username }}</td>
-          <td>{{ s.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>{{ s.timestamp|format_central }}</td>
           <td>{{ s.content }}</td>
         </tr>
         {% endfor %}
