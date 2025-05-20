@@ -1,9 +1,12 @@
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
-import time
+
+from ..random_animal import RandomAnimalHandler
 
 from .. import models
 from ..dependencies import get_current_user, templates
+
+_animal_handler = RandomAnimalHandler()
 
 router = APIRouter()
 
@@ -19,14 +22,7 @@ def protected(
     animal: str = "cat",
     user: models.User = Depends(get_current_user),
 ):
-    animal = animal.lower()
-    if animal == "dog":
-        url = f"https://placedog.net/500?{int(time.time())}"
-    elif animal == "turtle":
-        url = f"https://loremflickr.com/300/300/turtle?{int(time.time())}"
-    else:
-        animal = "cat"
-        url = f"https://cataas.com/cat?{int(time.time())}"
+    animal, url = _animal_handler.get_animal_url(animal)
     return templates.TemplateResponse(
         "success.html",
         {
