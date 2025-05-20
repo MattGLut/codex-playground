@@ -29,9 +29,6 @@ def test_signup_and_login(client):
     assert 'Codex Playground' in response.text
     assert '<div class="sidebar">' in response.text
     assert '<a href="/forecast/nashville">' in response.text
-    assert '<a href="/forecast/nashville/detailed">' in response.text
-
-
 def test_signup_success(client):
     response = client.post(
         "/signup",

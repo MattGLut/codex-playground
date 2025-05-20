@@ -52,6 +52,7 @@ def test_nashville_forecast_endpoint(monkeypatch, client):
     assert '<div class="top-header">' in response.text
     assert 'Codex Playground' in response.text
     assert '<div class="sidebar">' in response.text
+    assert "detailedForecast" in response.text
 
 
 def test_nashville_forecast_requires_login(monkeypatch, client):
@@ -118,6 +119,7 @@ def test_nashville_detailed_forecast_endpoint(monkeypatch, client):
     assert expected["daily"]["time"][0] in response.text
     assert "Partly cloudy" in response.text
     assert "30%" in response.text
+    assert "detailedForecast" in response.text
 
 
 def test_nashville_detailed_forecast_requires_login(monkeypatch, client):
