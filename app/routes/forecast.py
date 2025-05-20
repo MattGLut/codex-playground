@@ -24,42 +24,98 @@ WEATHER_MAP = {
     95: "Thunderstorm",
 }
 
+CITIES = {
+    "nashville": {
+        "name": "Nashville",
+        "latitude": 36.1627,
+        "longitude": -86.7816,
+    },
+    "holts-summit": {
+        "name": "Holts Summit",
+        "latitude": 38.95,
+        "longitude": -92.12,
+    },
+}
 
-@router.get("/forecast/nashville", response_class=HTMLResponse)
-def nashville_forecast(
-    request: Request, user: models.User = Depends(get_current_user)
-):
-    """Return Nashville's 7 day weather forecast from Open-Meteo as a web page."""
-    try:
-        response = httpx.get(
-            "https://api.open-meteo.com/v1/forecast",
-            params={
-                "latitude": 36.1627,
-                "longitude": -86.7816,
-                "daily": "temperature_2m_max,temperature_2m_min",
-                "forecast_days": 7,
-                "temperature_unit": "fahrenheit",
-                "timezone": "America/Chicago",
-            },
-            timeout=10,
+
+def _get_forecast_data(city: dict, detailed: bool):
+    daily = "temperature_2m_max,temperature_2m_min"
+    if detailed:
+        daily = (
+            "weathercode,temperature_2m_max,temperature_2m_min," "precipitation_probability_max"
         )
-        response.raise_for_status()
+    response = httpx.get(
+        "https://api.open-meteo.com/v1/forecast",
+        params={
+            "latitude": city["latitude"],
+            "longitude": city["longitude"],
+            "daily": daily,
+            "forecast_days": 7,
+            "temperature_unit": "fahrenheit",
+            "timezone": "America/Chicago",
+        },
+        timeout=10,
+    )
+    response.raise_for_status()
+    return response.json()
+
+
+def _render_forecast(request: Request, slug: str, detailed: bool):
+    city = CITIES[slug]
+    try:
+        data = _get_forecast_data(city, detailed)
     except httpx.HTTPError:
         return HTMLResponse(
             "Failed to fetch forecast data. Please try again later.",
             status_code=status.HTTP_502_BAD_GATEWAY,
         )
-    data = response.json()
-    forecast = list(
-        zip(
-            data["daily"]["time"],
-            data["daily"]["temperature_2m_max"],
-            data["daily"]["temperature_2m_min"],
+
+    if detailed:
+        forecast = [
+            (
+                date,
+                WEATHER_MAP.get(code, "Unknown"),
+                tmax,
+                tmin,
+                precip,
+            )
+            for date, code, tmax, tmin, precip in zip(
+                data["daily"]["time"],
+                data["daily"].get("weathercode", []),
+                data["daily"]["temperature_2m_max"],
+                data["daily"]["temperature_2m_min"],
+                data["daily"].get("precipitation_probability_max", []),
+            )
+        ]
+        template = "forecast_detail.html"
+    else:
+        forecast = list(
+            zip(
+                data["daily"]["time"],
+                data["daily"]["temperature_2m_max"],
+                data["daily"]["temperature_2m_min"],
+            )
         )
-    )
+        template = "forecast.html"
+
     return templates.TemplateResponse(
-        "forecast.html", {"request": request, "forecast": forecast}
+        template,
+        {
+            "request": request,
+            "forecast": forecast,
+            "city_name": city["name"],
+            "slug": slug,
+            "cities": {k: v["name"] for k, v in CITIES.items()},
+        },
     )
+
+
+@router.get("/forecast/nashville", response_class=HTMLResponse)
+def nashville_forecast(
+    request: Request, user: models.User = Depends(get_current_user)
+):
+    """Return Nashville's 7 day weather forecast as a web page."""
+    return _render_forecast(request, "nashville", False)
 
 
 @router.get("/forecast/nashville/detailed", response_class=HTMLResponse)
@@ -67,42 +123,20 @@ def nashville_detailed_forecast(
     request: Request, user: models.User = Depends(get_current_user)
 ):
     """Return Nashville's 7 day detailed weather forecast as a web page."""
-    try:
-        response = httpx.get(
-            "https://api.open-meteo.com/v1/forecast",
-            params={
-                "latitude": 36.1627,
-                "longitude": -86.7816,
-                "daily": "weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max",
-                "forecast_days": 7,
-                "temperature_unit": "fahrenheit",
-                "timezone": "America/Chicago",
-            },
-            timeout=10,
-        )
-        response.raise_for_status()
-    except httpx.HTTPError:
-        return HTMLResponse(
-            "Failed to fetch forecast data. Please try again later.",
-            status_code=status.HTTP_502_BAD_GATEWAY,
-        )
-    data = response.json()
-    forecast = [
-        (
-            date,
-            WEATHER_MAP.get(code, "Unknown"),
-            tmax,
-            tmin,
-            precip,
-        )
-        for date, code, tmax, tmin, precip in zip(
-            data["daily"]["time"],
-            data["daily"]["weathercode"],
-            data["daily"]["temperature_2m_max"],
-            data["daily"]["temperature_2m_min"],
-            data["daily"]["precipitation_probability_max"],
-        )
-    ]
-    return templates.TemplateResponse(
-        "forecast_detail.html", {"request": request, "forecast": forecast}
-    )
+    return _render_forecast(request, "nashville", True)
+
+
+@router.get("/forecast/holts-summit", response_class=HTMLResponse)
+def holts_summit_forecast(
+    request: Request, user: models.User = Depends(get_current_user)
+):
+    """Return Holts Summit's 7 day weather forecast as a web page."""
+    return _render_forecast(request, "holts-summit", False)
+
+
+@router.get("/forecast/holts-summit/detailed", response_class=HTMLResponse)
+def holts_summit_detailed_forecast(
+    request: Request, user: models.User = Depends(get_current_user)
+):
+    """Return Holts Summit's 7 day detailed weather forecast as a web page."""
+    return _render_forecast(request, "holts-summit", True)
