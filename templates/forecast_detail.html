@@ -1,15 +1,23 @@
 {% extends "base.html" %}
-{% block title %}Nashville Detailed Forecast{% endblock %}
+{% block title %}{{ city_name }} Detailed Forecast{% endblock %}
 {% block head_scripts %}
 <script>
   if (localStorage.getItem('detailedForecast') !== 'true') {
-    window.location.replace('/forecast/nashville');
+    window.location.replace('/forecast/{{ slug }}');
   }
 </script>
 {% endblock %}
 {% block content %}
   <div class="forecast-container">
-    <h1>Nashville Detailed Forecast</h1>
+    <h1>{{ city_name }} Detailed Forecast</h1>
+    <div>
+      <label for="city-select">City:</label>
+      <select id="city-select">
+        {% for city_slug, name in cities.items() %}
+        <option value="{{ city_slug }}"{% if city_slug == slug %} selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+      </select>
+    </div>
     <table>
       <thead>
         <tr>
@@ -34,4 +42,17 @@
     </table>
   </div>
 {% endblock %}
-{% block scripts %}{% endblock %}
+{% block scripts %}
+<script>
+  const select = document.getElementById('city-select');
+  if (select) {
+    select.addEventListener('change', () => {
+      const slug = select.value;
+      const path = localStorage.getItem('detailedForecast') === 'true'
+        ? `/forecast/${slug}/detailed`
+        : `/forecast/${slug}`;
+      window.location.replace(path);
+    });
+  }
+</script>
+{% endblock %}
