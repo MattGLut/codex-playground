@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Nashville Detailed Forecast{% endblock %}
+{% block head_scripts %}
+<script>
+  if (localStorage.getItem('detailedForecast') !== 'true') {
+    window.location.replace('/forecast/nashville');
+  }
+</script>
+{% endblock %}
 {% block content %}
   <div class="forecast-container">
     <h1>Nashville Detailed Forecast</h1>
@@ -40,9 +47,6 @@
   const dark = localStorage.getItem('darkMode') === 'true';
   applyDarkMode(dark);
 
-  if (localStorage.getItem('detailedForecast') !== 'true') {
-    window.location.replace('/forecast/nashville');
-  }
 
   const toggle = document.getElementById('toggle-dark');
   if (toggle) {
