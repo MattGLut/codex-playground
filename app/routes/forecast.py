@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import HTMLResponse
 import httpx
+from sqlalchemy.orm import Session
 from .. import models
 from ..dependencies import get_current_user, templates
+from ..database import get_db
+from ..user_settings import get_user_settings
 
 router = APIRouter()
 
@@ -59,8 +62,12 @@ def _get_forecast_data(city: dict, detailed: bool):
     return response.json()
 
 
-def _render_forecast(request: Request, slug: str, detailed: bool):
+def _render_forecast(request: Request, slug: str, detailed: bool, user: models.User, db: Session):
     city = CITIES[slug]
+    settings = get_user_settings(db, user.id)
+    settings.preferred_city = slug
+    settings.detailed_forecast = detailed
+    db.commit()
     try:
         data = _get_forecast_data(city, detailed)
     except httpx.HTTPError:
@@ -107,37 +114,46 @@ def _render_forecast(request: Request, slug: str, detailed: bool):
             "slug": slug,
             "today": today,
             "cities": {k: v["name"] for k, v in CITIES.items()},
+            "detailed": settings.detailed_forecast,
         },
     )
 
 
 @router.get("/forecast/nashville", response_class=HTMLResponse)
 def nashville_forecast(
-    request: Request, user: models.User = Depends(get_current_user)
+    request: Request,
+    user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
     """Return Nashville's 7 day weather forecast as a web page."""
-    return _render_forecast(request, "nashville", False)
+    return _render_forecast(request, "nashville", False, user, db)
 
 
 @router.get("/forecast/nashville/detailed", response_class=HTMLResponse)
 def nashville_detailed_forecast(
-    request: Request, user: models.User = Depends(get_current_user)
+    request: Request,
+    user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
     """Return Nashville's 7 day detailed weather forecast as a web page."""
-    return _render_forecast(request, "nashville", True)
+    return _render_forecast(request, "nashville", True, user, db)
 
 
 @router.get("/forecast/holts-summit", response_class=HTMLResponse)
 def holts_summit_forecast(
-    request: Request, user: models.User = Depends(get_current_user)
+    request: Request,
+    user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
     """Return Holts Summit's 7 day weather forecast as a web page."""
-    return _render_forecast(request, "holts-summit", False)
+    return _render_forecast(request, "holts-summit", False, user, db)
 
 
 @router.get("/forecast/holts-summit/detailed", response_class=HTMLResponse)
 def holts_summit_detailed_forecast(
-    request: Request, user: models.User = Depends(get_current_user)
+    request: Request,
+    user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
     """Return Holts Summit's 7 day detailed weather forecast as a web page."""
-    return _render_forecast(request, "holts-summit", True)
+    return _render_forecast(request, "holts-summit", True, user, db)

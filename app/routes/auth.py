@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from .. import auth, models
 from ..database import get_db
 from ..dependencies import templates
+from ..user_settings import get_user_settings
 
 router = APIRouter()
 
@@ -26,6 +27,8 @@ def signup(
     user = models.User(username=username, hashed_password=hashed_password)
     db.add(user)
     db.commit()
+    db.refresh(user)
+    get_user_settings(db, user.id)
     return RedirectResponse(url="/login", status_code=303)
 
 
