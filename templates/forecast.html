@@ -24,7 +24,11 @@
       </thead>
       <tbody>
         {% for date, high, low in forecast %}
-        <tr><td>{{ date }}</td><td>{{ high }}&deg;F</td><td>{{ low }}&deg;F</td></tr>
+        <tr{% if date == today %} class="today-row"{% endif %}>
+          <td>{{ date }}</td>
+          <td>{{ high }}&deg;F</td>
+          <td>{{ low }}&deg;F</td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
