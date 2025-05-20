@@ -49,6 +49,15 @@ docker run -e DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres \
   -p 8000:80 codex-playground
 ```
 
+To keep the default SQLite database across container restarts, mount a host
+directory and point `DATABASE_URL` to that location:
+
+```bash
+docker run -v $(pwd)/data:/data \
+  -e DATABASE_URL=sqlite:////data/test.db \
+  -p 8000:80 codex-playground
+```
+
 The example above expects a PostgreSQL instance reachable at the hostname `db`. For local development you can run a Postgres container with:
 
 ```bash
