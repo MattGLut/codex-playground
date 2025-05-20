@@ -4,11 +4,17 @@
   <div class="success-container">
     <h1>Congrats! You signed in!</h1>
     <p>Welcome {{ username }}!</p>
+    <label for="animal-select">Choose an animal:</label>
+    <select id="animal-select">
+      <option value="cat">Cat</option>
+      <option value="dog">Dog</option>
+      <option value="turtle">Turtle</option>
+    </select>
     <div id="spinner" class="spinner"></div>
     <img
-        id="cat-photo"
-        src="{{ cat_url }}"
-        alt="Random Cat"
+        id="animal-photo"
+        src="{{ animal_url }}"
+        alt="Random {{ animal.capitalize() }}"
         width="300"
         height="300"
         style="object-fit: cover; display: none;"
@@ -17,7 +23,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
-  const img = document.getElementById('cat-photo');
+  const img = document.getElementById('animal-photo');
   const spinner = document.getElementById('spinner');
   if (img && spinner) {
     spinner.style.display = 'block';
@@ -26,5 +32,25 @@
       img.style.display = 'block';
     });
   }
+
+  const select = document.getElementById('animal-select');
+  document.addEventListener('DOMContentLoaded', () => {
+    const current = '{{ animal }}';
+    let stored = localStorage.getItem('preferredAnimal');
+    if (!stored) {
+      stored = current;
+      localStorage.setItem('preferredAnimal', stored);
+    }
+    select.value = stored;
+    if (stored !== current) {
+      window.location.search = `?animal=${stored}`;
+    }
+  });
+
+  select.addEventListener('change', () => {
+    const val = select.value;
+    localStorage.setItem('preferredAnimal', val);
+    window.location.search = `?animal=${val}`;
+  });
 </script>
 {% endblock %}

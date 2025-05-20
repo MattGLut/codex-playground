@@ -8,11 +8,11 @@ def test_dog_photo_display_after_login(client):
 
     login_helper(client, username, password)
 
-    response = client.get("/dogs")
+    response = client.get("/protected?animal=dog")
     assert response.status_code == 200
-    assert 'id="dog-photo"' in response.text
+    assert 'id="animal-photo"' in response.text
     assert 'id="spinner"' in response.text
-    match = re.search(r'<img[^>]*id="dog-photo"[^>]*>', response.text)
+    match = re.search(r'<img[^>]*id="animal-photo"[^>]*>', response.text)
     assert match, "dog photo img tag not found"
     tag = match.group(0)
     src_match = re.search(r'src="([^"]+)"', tag)
