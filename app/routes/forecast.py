@@ -7,6 +7,23 @@ from ..dependencies import get_current_user, templates
 
 router = APIRouter()
 
+WEATHER_MAP = {
+    0: "Clear",
+    1: "Mainly clear",
+    2: "Partly cloudy",
+    3: "Overcast",
+    45: "Fog",
+    48: "Rime fog",
+    51: "Light drizzle",
+    53: "Drizzle",
+    55: "Heavy drizzle",
+    61: "Light rain",
+    63: "Rain",
+    65: "Heavy rain",
+    80: "Rain showers",
+    95: "Thunderstorm",
+}
+
 
 @router.get("/forecast/nashville", response_class=HTMLResponse)
 def nashville_forecast(
@@ -58,26 +75,10 @@ def nashville_detailed_forecast(
     )
     response.raise_for_status()
     data = response.json()
-    weather_map = {
-        0: "Clear",
-        1: "Mainly clear",
-        2: "Partly cloudy",
-        3: "Overcast",
-        45: "Fog",
-        48: "Rime fog",
-        51: "Light drizzle",
-        53: "Drizzle",
-        55: "Heavy drizzle",
-        61: "Light rain",
-        63: "Rain",
-        65: "Heavy rain",
-        80: "Rain showers",
-        95: "Thunderstorm",
-    }
     forecast = [
         (
             date,
-            weather_map.get(code, "Unknown"),
+            WEATHER_MAP.get(code, "Unknown"),
             tmax,
             tmin,
             precip,
