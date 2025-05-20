@@ -1,27 +1,13 @@
 from app import models, auth
-from conftest import TestingSessionLocal
+from conftest import TestingSessionLocal, login_helper
 
 
 def test_signup_and_login(client):
-    # Sign up
-    response = client.post(
-        "/signup",
-        data={"username": "alice", "password": "secret"},
-        follow_redirects=False,
-    )
-    assert response.status_code == 303
-
-    # Login
-    response = client.post(
-        "/login",
-        data={"username": "alice", "password": "secret"},
-        follow_redirects=False,
-    )
-    assert response.status_code == 303
+    # Sign up and login
+    response = login_helper(client, "alice", "secret")
     assert response.headers["location"] == "/protected"
 
     # Access protected page using cookies from login
-    client.cookies.update(response.cookies)
     response = client.get("/protected")
     assert response.status_code == 200
     assert "Congrats! You signed in!" in response.text
@@ -47,22 +33,9 @@ def test_signup_success(client):
 
 
 def test_login_success(client):
-    # Create user by signing up first
-    client.post(
-        "/signup",
-        data={"username": "carol", "password": "topsecret"},
-        follow_redirects=False,
-    )
-
-    response = client.post(
-        "/login",
-        data={"username": "carol", "password": "topsecret"},
-        follow_redirects=False,
-    )
-    assert response.status_code == 303
+    response = login_helper(client, "carol", "topsecret")
     assert response.headers["location"] == "/protected"
 
-    client.cookies.update(response.cookies)
     response = client.get("/protected")
     assert response.status_code == 200
     assert "Congrats! You signed in!" in response.text

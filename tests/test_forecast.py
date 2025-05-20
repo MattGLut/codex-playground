@@ -1,4 +1,5 @@
 import httpx
+from conftest import login_helper
 
 
 def test_nashville_forecast_endpoint(monkeypatch, client):
@@ -31,19 +32,7 @@ def test_nashville_forecast_endpoint(monkeypatch, client):
     # create and login user
     username = "weather"
     password = "secret"
-    client.post(
-        "/signup",
-        data={"username": username, "password": password},
-        follow_redirects=False,
-    )
-
-    response = client.post(
-        "/login",
-        data={"username": username, "password": password},
-        follow_redirects=False,
-    )
-    assert response.status_code == 303
-    client.cookies.update(response.cookies)
+    login_helper(client, username, password)
 
     response = client.get("/forecast/nashville")
     assert response.status_code == 200
@@ -101,19 +90,7 @@ def test_nashville_detailed_forecast_endpoint(monkeypatch, client):
 
     username = "detail"
     password = "secret"
-    client.post(
-        "/signup",
-        data={"username": username, "password": password},
-        follow_redirects=False,
-    )
-
-    response = client.post(
-        "/login",
-        data={"username": username, "password": password},
-        follow_redirects=False,
-    )
-    assert response.status_code == 303
-    client.cookies.update(response.cookies)
+    login_helper(client, username, password)
 
     response = client.get("/forecast/nashville/detailed")
     assert response.status_code == 200
