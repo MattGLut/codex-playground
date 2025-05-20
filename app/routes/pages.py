@@ -14,32 +14,30 @@ def root(request: Request):
 
 
 @router.get("/protected", response_class=HTMLResponse)
-def protected(request: Request, user: models.User = Depends(get_current_user)):
-    cat_url = f"https://cataas.com/cat?{int(time.time())}"
+def protected(
+    request: Request,
+    animal: str = "cat",
+    user: models.User = Depends(get_current_user),
+):
+    animal = animal.lower()
+    if animal == "dog":
+        url = f"https://placedog.net/500?{int(time.time())}"
+    elif animal == "turtle":
+        url = f"https://source.unsplash.com/300x300/?turtle&{int(time.time())}"
+    else:
+        animal = "cat"
+        url = f"https://cataas.com/cat?{int(time.time())}"
     return templates.TemplateResponse(
         "success.html",
-        {"request": request, "username": user.username, "cat_url": cat_url},
+        {
+            "request": request,
+            "username": user.username,
+            "animal_url": url,
+            "animal": animal,
+        },
     )
 
 
-@router.get("/dogs", response_class=HTMLResponse)
-def random_dog(request: Request, user: models.User = Depends(get_current_user)):
-    dog_url = f"https://placedog.net/500?{int(time.time())}"
-    return templates.TemplateResponse(
-        "dog.html",
-        {"request": request, "dog_url": dog_url},
-    )
-
-
-@router.get("/turtles", response_class=HTMLResponse)
-def random_turtle(
-    request: Request, user: models.User = Depends(get_current_user)
-):
-    turtle_url = f"https://source.unsplash.com/300x300/?turtle&{int(time.time())}"
-    return templates.TemplateResponse(
-        "turtle.html",
-        {"request": request, "turtle_url": turtle_url},
-    )
 
 
 @router.get("/account", response_class=HTMLResponse)
