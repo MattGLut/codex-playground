@@ -46,6 +46,7 @@ def test_forecast_endpoint(monkeypatch, client, slug, lat, lon):
     assert response.status_code == 200
     assert f"{CITIES[slug]['name']} 7-Day Forecast" in response.text
     assert expected["daily"]["time"][0] in response.text
+    assert 'class="today-row"' in response.text
     assert 'id="city-select"' in response.text
     for s in CITIES:
         assert f'<option value="{s}"' in response.text
@@ -102,6 +103,7 @@ def test_detailed_forecast_endpoint(monkeypatch, client, slug, lat, lon):
     assert "30%" in response.text
     assert 'id="city-select"' in response.text
     assert "detailedForecast" in response.text
+    assert 'class="today-row"' in response.text
 
 
 @pytest.mark.parametrize("path", [

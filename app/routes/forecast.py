@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import HTMLResponse
 import httpx
-
 from .. import models
 from ..dependencies import get_current_user, templates
 
@@ -97,6 +96,7 @@ def _render_forecast(request: Request, slug: str, detailed: bool):
             )
         )
         template = "forecast.html"
+    today = forecast[0][0] if forecast else ""
 
     return templates.TemplateResponse(
         template,
@@ -105,6 +105,7 @@ def _render_forecast(request: Request, slug: str, detailed: bool):
             "forecast": forecast,
             "city_name": city["name"],
             "slug": slug,
+            "today": today,
             "cities": {k: v["name"] for k, v in CITIES.items()},
         },
     )

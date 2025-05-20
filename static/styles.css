@@ -104,6 +104,12 @@ th, td {
     border: 1px solid #ccc;
     padding: 0.5rem;
 }
+.today-row {
+    background-color: #ffffcc;
+}
+.dark-mode .today-row {
+    background-color: #555555;
+}
 a {
     color: var(--link-color);
 }
