@@ -34,5 +34,5 @@ def test_darkmode_toggle_in_account_page_after_login(client):
 
     response = client.get("/account")
     assert response.status_code == 200
-    assert 'id="toggle-dark"' in response.text
+    assert '<input type="checkbox" id="toggle-dark"' in response.text
     assert 'applyDarkMode' in response.text
