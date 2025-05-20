@@ -35,12 +35,12 @@
 
   const select = document.getElementById('animal-select');
   document.addEventListener('DOMContentLoaded', () => {
+    localStorage.setItem('darkMode', {{ 'true' if dark_mode else 'false' }});
+    localStorage.setItem('detailedForecast', {{ 'true' if detailed else 'false' }});
+
     const current = '{{ animal }}';
-    let stored = localStorage.getItem('preferredAnimal');
-    if (!stored) {
-      stored = current;
-      localStorage.setItem('preferredAnimal', stored);
-    }
+    let stored = '{{ preferred_animal }}';
+    localStorage.setItem('preferredAnimal', stored);
     select.value = stored;
     if (stored !== current) {
       window.location.search = `?animal=${stored}`;
@@ -50,7 +50,13 @@
   select.addEventListener('change', () => {
     const val = select.value;
     localStorage.setItem('preferredAnimal', val);
-    window.location.search = `?animal=${val}`;
+    fetch('/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'preferred_animal=' + val
+    }).then(() => {
+      window.location.search = `?animal=${val}`;
+    });
   });
 </script>
 {% endblock %}

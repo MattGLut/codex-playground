@@ -2,9 +2,7 @@
 {% block title %}{{ city_name }} Forecast{% endblock %}
 {% block head_scripts %}
 <script>
-  if (localStorage.getItem('detailedForecast') === 'true') {
-    window.location.replace('/forecast/{{ slug }}/detailed');
-  }
+  localStorage.setItem('detailedForecast', {{ 'true' if detailed else 'false' }});
 </script>
 {% endblock %}
 {% block content %}
@@ -40,10 +38,16 @@
   if (select) {
     select.addEventListener('change', () => {
       const slug = select.value;
-      const path = localStorage.getItem('detailedForecast') === 'true'
-        ? `/forecast/${slug}/detailed`
-        : `/forecast/${slug}`;
-      window.location.replace(path);
+      fetch('/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'preferred_city=' + slug
+      }).then(() => {
+        const path = localStorage.getItem('detailedForecast') === 'true'
+          ? `/forecast/${slug}/detailed`
+          : `/forecast/${slug}`;
+        window.location.replace(path);
+      });
     });
   }
 </script>
