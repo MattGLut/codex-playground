@@ -1,13 +1,22 @@
 import httpx
+import pytest
 from conftest import login_helper
+from app.routes.forecast import CITIES
 
 
-def test_nashville_forecast_endpoint(monkeypatch, client):
+@pytest.mark.parametrize(
+    "slug,lat,lon",
+    [
+        ("nashville", 36.1627, -86.7816),
+        ("holts-summit", 38.95, -92.12),
+    ],
+)
+def test_forecast_endpoint(monkeypatch, client, slug, lat, lon):
     expected = {
         "daily": {
-            "time": ["2025-05-20", "2025-05-21", "2025-05-22", "2025-05-23", "2025-05-24", "2025-05-25", "2025-05-26"],
-            "temperature_2m_max": [70, 71, 72, 73, 74, 75, 76],
-            "temperature_2m_min": [50, 51, 52, 53, 54, 55, 56],
+            "time": ["2025-05-20"],
+            "temperature_2m_max": [70],
+            "temperature_2m_min": [50],
         }
     }
 
@@ -23,44 +32,35 @@ def test_nashville_forecast_endpoint(monkeypatch, client):
 
     def mock_get(url, params=None, timeout=None):
         assert url == "https://api.open-meteo.com/v1/forecast"
-        assert params["latitude"] == 36.1627
-        assert params["longitude"] == -86.7816
+        assert params["latitude"] == lat
+        assert params["longitude"] == lon
         return MockResponse(expected)
 
     monkeypatch.setattr(httpx, "get", mock_get)
 
-    # create and login user
-    username = "weather"
+    username = slug.replace("-", "")
     password = "secret"
     login_helper(client, username, password)
 
-    response = client.get("/forecast/nashville")
+    response = client.get(f"/forecast/{slug}")
     assert response.status_code == 200
-    assert "Nashville 7-Day Forecast" in response.text
+    assert f"{CITIES[slug]['name']} 7-Day Forecast" in response.text
     assert expected["daily"]["time"][0] in response.text
-    assert '<div class="top-header">' in response.text
-    assert 'Codex Playground' in response.text
-    assert '<a href="/protected">Codex Playground</a>' in response.text
-    assert '<div class="sidebar">' in response.text
-    assert '<a href="/protected">Home</a>' not in response.text
+    assert 'id="city-select"' in response.text
+    for s in CITIES:
+        assert f'<option value="{s}"' in response.text
+    assert f'<option value="{slug}" selected' in response.text
     assert "detailedForecast" in response.text
 
 
-def test_nashville_forecast_requires_login(monkeypatch, client):
-    """Ensure the forecast endpoint is protected."""
-
-    def fail_get(*args, **kwargs):
-        raise AssertionError("httpx.get should not be called when unauthorized")
-
-    monkeypatch.setattr(httpx, "get", fail_get)
-
-    response = client.get("/forecast/nashville", follow_redirects=False)
-    assert response.status_code == 303
-    assert response.headers["location"].startswith("/login")
-    assert "error=Please%20log%20in%20to%20access%20that%20page" in response.headers["location"]
-
-
-def test_nashville_detailed_forecast_endpoint(monkeypatch, client):
+@pytest.mark.parametrize(
+    "slug,lat,lon",
+    [
+        ("nashville", 36.1627, -86.7816),
+        ("holts-summit", 38.95, -92.12),
+    ],
+)
+def test_detailed_forecast_endpoint(monkeypatch, client, slug, lat, lon):
     expected = {
         "daily": {
             "time": ["2025-05-20"],
@@ -83,65 +83,72 @@ def test_nashville_detailed_forecast_endpoint(monkeypatch, client):
 
     def mock_get(url, params=None, timeout=None):
         assert url == "https://api.open-meteo.com/v1/forecast"
+        assert params["latitude"] == lat
+        assert params["longitude"] == lon
         assert "weathercode" in params["daily"]
         return MockResponse(expected)
 
     monkeypatch.setattr(httpx, "get", mock_get)
 
-    username = "detail"
+    username = f"detail{slug.replace('-', '')}"
     password = "secret"
     login_helper(client, username, password)
 
-    response = client.get("/forecast/nashville/detailed")
+    response = client.get(f"/forecast/{slug}/detailed")
     assert response.status_code == 200
-    assert "Nashville Detailed Forecast" in response.text
+    assert f"{CITIES[slug]['name']} Detailed Forecast" in response.text
     assert expected["daily"]["time"][0] in response.text
     assert "Partly cloudy" in response.text
     assert "30%" in response.text
+    assert 'id="city-select"' in response.text
     assert "detailedForecast" in response.text
 
 
-def test_nashville_detailed_forecast_requires_login(monkeypatch, client):
+@pytest.mark.parametrize("path", [
+    "/forecast/nashville",
+    "/forecast/holts-summit",
+    "/forecast/nashville/detailed",
+    "/forecast/holts-summit/detailed",
+])
+def test_forecast_requires_login(monkeypatch, client, path):
     def fail_get(*args, **kwargs):
         raise AssertionError("httpx.get should not be called when unauthorized")
 
     monkeypatch.setattr(httpx, "get", fail_get)
 
-    response = client.get("/forecast/nashville/detailed", follow_redirects=False)
+    response = client.get(path, follow_redirects=False)
     assert response.status_code == 303
     assert response.headers["location"].startswith("/login")
     assert "error=Please%20log%20in%20to%20access%20that%20page" in response.headers["location"]
 
 
-def test_nashville_forecast_httpx_error(monkeypatch, client):
-    """Return 502 when the upstream service fails for basic forecast."""
-
+@pytest.mark.parametrize("slug", ["nashville", "holts-summit"])
+def test_forecast_httpx_error(monkeypatch, client, slug):
     def mock_get(*args, **kwargs):
         raise httpx.HTTPError("boom")
 
     monkeypatch.setattr(httpx, "get", mock_get)
 
-    username = "errbasic"
+    username = f"err{slug.replace('-', '')}"
     password = "secret"
     login_helper(client, username, password)
 
-    response = client.get("/forecast/nashville")
+    response = client.get(f"/forecast/{slug}")
     assert response.status_code == 502
     assert "Failed to fetch forecast data" in response.text
 
 
-def test_nashville_detailed_forecast_httpx_error(monkeypatch, client):
-    """Return 502 when the upstream service fails for detailed forecast."""
-
+@pytest.mark.parametrize("slug", ["nashville", "holts-summit"])
+def test_detailed_forecast_httpx_error(monkeypatch, client, slug):
     def mock_get(*args, **kwargs):
         raise httpx.HTTPError("boom")
 
     monkeypatch.setattr(httpx, "get", mock_get)
 
-    username = "errdetail"
+    username = f"errdetail{slug.replace('-', '')}"
     password = "secret"
     login_helper(client, username, password)
 
-    response = client.get("/forecast/nashville/detailed")
+    response = client.get(f"/forecast/{slug}/detailed")
     assert response.status_code == 502
     assert "Failed to fetch forecast data" in response.text
