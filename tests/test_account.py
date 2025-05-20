@@ -36,4 +36,4 @@ def test_account_page_and_link(client):
     assert "Account Settings" in response.text
     assert username in response.text
     assert '<div class="sidebar">' in response.text
-    assert 'id="toggle-detailed"' in response.text
+    assert '<input type="checkbox" id="toggle-detailed"' in response.text
