@@ -1,70 +1,63 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Account Settings</title>
-    <link rel="stylesheet" href="/static/styles.css" />
-  </head>
-  <body>
-    {% include "header.html" %}
-    <div class="page-body">
-      {% include "sidebar.html" %}
-        <div class="account-container">
-          <h1>Account Settings</h1>
-          <p>Username: {{ username }}</p>
-          <div class="toggle-row">
-            <label class="switch">
-              <input type="checkbox" id="toggle-dark" />
-              <span class="slider round"></span>
-            </label>
-            <span>Dark Mode</span>
-          </div>
-          <div class="toggle-row">
-            <label class="switch">
-              <input type="checkbox" id="toggle-detailed" />
-              <span class="slider round"></span>
-            </label>
-            <span>Detailed Forecast</span>
-          </div>
-        </div>
+{% extends "base.html" %}
+{% block title %}Account Settings{% endblock %}
+{% block content %}
+  <div class="account-container">
+    <h1>Account Settings</h1>
+    <p>Username: {{ username }}</p>
+    <div class="toggle-row">
+      <label class="switch">
+        <input type="checkbox" id="toggle-dark" />
+        <span class="slider round"></span>
+      </label>
+      <span>Dark Mode</span>
     </div>
-    <script>
-      function applyDarkMode(on) {
-        if (on) {
-          document.body.classList.add('dark-mode');
-        } else {
-          document.body.classList.remove('dark-mode');
-        }
-      }
+    <div class="toggle-row">
+      <label class="switch">
+        <input type="checkbox" id="toggle-detailed" />
+        <span class="slider round"></span>
+      </label>
+      <span>Detailed Forecast</span>
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+<script>
+  function applyDarkMode(on) {
+    if (on) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }
 
-      const dark = localStorage.getItem('darkMode') === 'true';
-      applyDarkMode(dark);
+  const dark = localStorage.getItem('darkMode') === 'true';
+  applyDarkMode(dark);
 
-      const toggle = document.getElementById('toggle-dark');
-      if (toggle) {
-        toggle.checked = dark;
-        toggle.addEventListener('change', () => {
-          const enabled = toggle.checked;
-          applyDarkMode(enabled);
-          localStorage.setItem('darkMode', enabled);
-        });
-      }
+  const toggle = document.getElementById('toggle-dark');
+  if (toggle) {
+    toggle.checked = dark;
+    toggle.addEventListener('change', () => {
+      const enabled = toggle.checked;
+      applyDarkMode(enabled);
+      localStorage.setItem('darkMode', enabled);
+    });
+  }
 
-      function applyDetailedState() {
-        const enabled = localStorage.getItem('detailedForecast') === 'true';
-        const box = document.getElementById('toggle-detailed');
-        if (box) {
-          box.checked = enabled;
-        }
-      }
+  function applyDetailedState() {
+    const enabled = localStorage.getItem('detailedForecast') === 'true';
+    const box = document.getElementById('toggle-detailed');
+    if (box) {
+      box.checked = enabled;
+    }
+  }
 
-      applyDetailedState();
-      const detailedToggle = document.getElementById('toggle-detailed');
-      if (detailedToggle) {
-        detailedToggle.addEventListener('change', () => {
-          const enabled = detailedToggle.checked;
-          localStorage.setItem('detailedForecast', enabled);
-        });
-      }
-    </script>
-  </body>
-</html>
+  applyDetailedState();
+  const detailedToggle = document.getElementById('toggle-detailed');
+  if (detailedToggle) {
+    detailedToggle.addEventListener('change', () => {
+      const enabled = detailedToggle.checked;
+      localStorage.setItem('detailedForecast', enabled);
+    });
+  }
+</script>
+{% endblock %}
