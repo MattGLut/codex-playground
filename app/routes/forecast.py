@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import HTMLResponse
 import httpx
 
@@ -30,19 +30,25 @@ def nashville_forecast(
     request: Request, user: models.User = Depends(get_current_user)
 ):
     """Return Nashville's 7 day weather forecast from Open-Meteo as a web page."""
-    response = httpx.get(
-        "https://api.open-meteo.com/v1/forecast",
-        params={
-            "latitude": 36.1627,
-            "longitude": -86.7816,
-            "daily": "temperature_2m_max,temperature_2m_min",
-            "forecast_days": 7,
-            "temperature_unit": "fahrenheit",
-            "timezone": "America/Chicago",
-        },
-        timeout=10,
-    )
-    response.raise_for_status()
+    try:
+        response = httpx.get(
+            "https://api.open-meteo.com/v1/forecast",
+            params={
+                "latitude": 36.1627,
+                "longitude": -86.7816,
+                "daily": "temperature_2m_max,temperature_2m_min",
+                "forecast_days": 7,
+                "temperature_unit": "fahrenheit",
+                "timezone": "America/Chicago",
+            },
+            timeout=10,
+        )
+        response.raise_for_status()
+    except httpx.HTTPError:
+        return HTMLResponse(
+            "Failed to fetch forecast data. Please try again later.",
+            status_code=status.HTTP_502_BAD_GATEWAY,
+        )
     data = response.json()
     forecast = list(
         zip(
@@ -61,19 +67,25 @@ def nashville_detailed_forecast(
     request: Request, user: models.User = Depends(get_current_user)
 ):
     """Return Nashville's 7 day detailed weather forecast as a web page."""
-    response = httpx.get(
-        "https://api.open-meteo.com/v1/forecast",
-        params={
-            "latitude": 36.1627,
-            "longitude": -86.7816,
-            "daily": "weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max",
-            "forecast_days": 7,
-            "temperature_unit": "fahrenheit",
-            "timezone": "America/Chicago",
-        },
-        timeout=10,
-    )
-    response.raise_for_status()
+    try:
+        response = httpx.get(
+            "https://api.open-meteo.com/v1/forecast",
+            params={
+                "latitude": 36.1627,
+                "longitude": -86.7816,
+                "daily": "weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max",
+                "forecast_days": 7,
+                "temperature_unit": "fahrenheit",
+                "timezone": "America/Chicago",
+            },
+            timeout=10,
+        )
+        response.raise_for_status()
+    except httpx.HTTPError:
+        return HTMLResponse(
+            "Failed to fetch forecast data. Please try again later.",
+            status_code=status.HTTP_502_BAD_GATEWAY,
+        )
     data = response.json()
     forecast = [
         (
