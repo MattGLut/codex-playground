@@ -1,50 +1,43 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Nashville Forecast</title>
-    <link rel="stylesheet" href="/static/styles.css" />
-  </head>
-  <body>
-    {% include "header.html" %}
-    <div class="page-body">
-      {% include "sidebar.html" %}
-      <div class="forecast-container">
-        <h1>Nashville 7-Day Forecast</h1>
-        <table>
-          <thead>
-            <tr><th>Date</th><th>High</th><th>Low</th></tr>
-        </thead>
-        <tbody>
-          {% for date, high, low in forecast %}
-          <tr><td>{{ date }}</td><td>{{ high }}&deg;F</td><td>{{ low }}&deg;F</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      </div>
-    </div>
-    <script>
-      function applyDarkMode(on) {
-        if (on) {
-          document.body.classList.add('dark-mode');
-        } else {
-          document.body.classList.remove('dark-mode');
-        }
-      }
+{% extends "base.html" %}
+{% block title %}Nashville Forecast{% endblock %}
+{% block content %}
+  <div class="forecast-container">
+    <h1>Nashville 7-Day Forecast</h1>
+    <table>
+      <thead>
+        <tr><th>Date</th><th>High</th><th>Low</th></tr>
+      </thead>
+      <tbody>
+        {% for date, high, low in forecast %}
+        <tr><td>{{ date }}</td><td>{{ high }}&deg;F</td><td>{{ low }}&deg;F</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
+{% block scripts %}
+<script>
+  function applyDarkMode(on) {
+    if (on) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+  }
 
-      const dark = localStorage.getItem('darkMode') === 'true';
-      applyDarkMode(dark);
+  const dark = localStorage.getItem('darkMode') === 'true';
+  applyDarkMode(dark);
 
-      if (localStorage.getItem('detailedForecast') === 'true') {
-        window.location.replace('/forecast/nashville/detailed');
-      }
+  if (localStorage.getItem('detailedForecast') === 'true') {
+    window.location.replace('/forecast/nashville/detailed');
+  }
 
-      const toggle = document.getElementById('toggle-dark');
-      if (toggle) {
-        toggle.addEventListener('click', () => {
-          const enabled = document.body.classList.toggle('dark-mode');
-          localStorage.setItem('darkMode', enabled);
-        });
-      }
-    </script>
-  </body>
-</html>
+  const toggle = document.getElementById('toggle-dark');
+  if (toggle) {
+    toggle.addEventListener('click', () => {
+      const enabled = document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', enabled);
+    });
+  }
+</script>
+{% endblock %}
