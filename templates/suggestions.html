@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Suggestions{% endblock %}
+{% block content %}
+  <div class="suggestion-container">
+    <h1>Suggestion Box</h1>
+    <form action="/suggestions" method="post">
+      <input type="text" name="content" />
+      <input type="submit" value="Submit" />
+    </form>
+    <table>
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Timestamp</th>
+          <th>Suggestion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in suggestions %}
+        <tr>
+          <td>{{ s.user.username }}</td>
+          <td>{{ s.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>{{ s.content }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
+{% block scripts %}{% endblock %}

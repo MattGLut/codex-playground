@@ -7,7 +7,12 @@ from sqlalchemy.orm import Session
 
 from . import auth, models
 from .database import Base, engine, get_db
-from .routes import auth as auth_routes, forecast as forecast_routes, pages as pages_routes
+from .routes import (
+    auth as auth_routes,
+    forecast as forecast_routes,
+    pages as pages_routes,
+    suggestions as suggestions_routes,
+)
 from .dependencies import templates
 
 Base.metadata.create_all(bind=engine)
@@ -54,3 +59,4 @@ async def custom_http_exception_handler(request: Request, exc: HTTPException):
 app.include_router(auth_routes.router)
 app.include_router(forecast_routes.router)
 app.include_router(pages_routes.router)
+app.include_router(suggestions_routes.router)
