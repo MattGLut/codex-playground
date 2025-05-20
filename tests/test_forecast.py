@@ -111,3 +111,37 @@ def test_nashville_detailed_forecast_requires_login(monkeypatch, client):
     assert response.status_code == 303
     assert response.headers["location"].startswith("/login")
     assert "error=Please%20log%20in%20to%20access%20that%20page" in response.headers["location"]
+
+
+def test_nashville_forecast_httpx_error(monkeypatch, client):
+    """Return 502 when the upstream service fails for basic forecast."""
+
+    def mock_get(*args, **kwargs):
+        raise httpx.HTTPError("boom")
+
+    monkeypatch.setattr(httpx, "get", mock_get)
+
+    username = "errbasic"
+    password = "secret"
+    login_helper(client, username, password)
+
+    response = client.get("/forecast/nashville")
+    assert response.status_code == 502
+    assert "Failed to fetch forecast data" in response.text
+
+
+def test_nashville_detailed_forecast_httpx_error(monkeypatch, client):
+    """Return 502 when the upstream service fails for detailed forecast."""
+
+    def mock_get(*args, **kwargs):
+        raise httpx.HTTPError("boom")
+
+    monkeypatch.setattr(httpx, "get", mock_get)
+
+    username = "errdetail"
+    password = "secret"
+    login_helper(client, username, password)
+
+    response = client.get("/forecast/nashville/detailed")
+    assert response.status_code == 502
+    assert "Failed to fetch forecast data" in response.text
