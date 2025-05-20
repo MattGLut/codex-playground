@@ -45,3 +45,20 @@ app.dependency_overrides[get_db] = override_get_db
 def client():
     with TestClient(app) as c:
         yield c
+
+
+def login_helper(client, username, password):
+    """Sign up and log in a user, returning the login response."""
+    client.post(
+        "/signup",
+        data={"username": username, "password": password},
+        follow_redirects=False,
+    )
+    response = client.post(
+        "/login",
+        data={"username": username, "password": password},
+        follow_redirects=False,
+    )
+    assert response.status_code == 303
+    client.cookies.update(response.cookies)
+    return response

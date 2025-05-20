@@ -1,23 +1,12 @@
 import re
+from conftest import login_helper
 
 
 def test_dog_photo_display_after_login(client):
     username = "doguser"
     password = "secret"
 
-    client.post(
-        "/signup",
-        data={"username": username, "password": password},
-        follow_redirects=False,
-    )
-
-    response = client.post(
-        "/login",
-        data={"username": username, "password": password},
-        follow_redirects=False,
-    )
-    assert response.status_code == 303
-    client.cookies.update(response.cookies)
+    login_helper(client, username, password)
 
     response = client.get("/dogs")
     assert response.status_code == 200
