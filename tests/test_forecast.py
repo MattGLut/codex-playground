@@ -51,7 +51,9 @@ def test_nashville_forecast_endpoint(monkeypatch, client):
     assert expected["daily"]["time"][0] in response.text
     assert '<div class="top-header">' in response.text
     assert 'Codex Playground' in response.text
+    assert '<a href="/protected">Codex Playground</a>' in response.text
     assert '<div class="sidebar">' in response.text
+    assert '<a href="/protected">Home</a>' not in response.text
     assert "detailedForecast" in response.text
 
 
