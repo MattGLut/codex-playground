@@ -8,3 +8,9 @@ pytest
 httpx
 itsdangerous
 psycopg2-binary
+
+# AI dependencies
+torch
+transformers
+diffusers
+Pillow
