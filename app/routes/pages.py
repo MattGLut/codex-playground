@@ -23,7 +23,7 @@ def protected(
     if animal == "dog":
         url = f"https://placedog.net/500?{int(time.time())}"
     elif animal == "turtle":
-        url = f"https://source.unsplash.com/300x300/?turtle&{int(time.time())}"
+        url = f"https://loremflickr.com/300/300/turtle?{int(time.time())}"
     else:
         animal = "cat"
         url = f"https://cataas.com/cat?{int(time.time())}"
