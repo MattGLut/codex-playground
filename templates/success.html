@@ -6,9 +6,9 @@
     <p>Welcome {{ username }}!</p>
     <label for="animal-select">Choose an animal:</label>
     <select id="animal-select">
-      <option value="cat">Cat</option>
-      <option value="dog">Dog</option>
-      <option value="turtle">Turtle</option>
+      {% for a in allowed_animals %}
+      <option value="{{ a }}">{{ a.capitalize() }}</option>
+      {% endfor %}
     </select>
     <div id="spinner" class="spinner"></div>
     <img

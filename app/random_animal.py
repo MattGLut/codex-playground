@@ -1,20 +1,20 @@
-import time
 from typing import Tuple
+
+from .ai_animals import AnimalGenerator
+
+ALLOWED_ANIMALS = ["cat", "dog", "turtle"]
 
 
 class RandomAnimalHandler:
-    """Generate URLs for random animal photos."""
+    """Generate URLs for AI animal photos."""
+
+    def __init__(self) -> None:
+        self.generator = AnimalGenerator()
 
     def get_animal_url(self, animal: str) -> Tuple[str, str]:
         """Return a tuple of (animal, url) for the requested animal."""
         animal = (animal or "cat").lower()
-        ts = int(time.time())
-        if animal == "dog":
-            url = f"https://placedog.net/500?{ts}"
-        elif animal == "turtle":
-            # Use Unsplash to reliably fetch a random turtle photo
-            url = f"https://source.unsplash.com/300x300/?turtle&{ts}"
-        else:
+        if animal not in ALLOWED_ANIMALS:
             animal = "cat"
-            url = f"https://cataas.com/cat?{ts}"
+        url = self.generator.generate_image(animal)
         return animal, url

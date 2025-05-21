@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 
-from ..random_animal import RandomAnimalHandler
+from ..random_animal import ALLOWED_ANIMALS, RandomAnimalHandler
 
 from .. import models
 from ..dependencies import get_current_user, templates
@@ -28,6 +28,8 @@ def protected(
 ):
     settings = get_user_settings(db, user.id)
     selected = animal or settings.preferred_animal
+    if selected not in ALLOWED_ANIMALS:
+        selected = "cat"
     if animal:
         settings.preferred_animal = selected
         db.commit()
@@ -44,6 +46,7 @@ def protected(
             "dark_mode": settings.dark_mode,
             "detailed": settings.detailed_forecast,
             "preferred_animal": settings.preferred_animal,
+            "allowed_animals": ALLOWED_ANIMALS,
         },
     )
 
