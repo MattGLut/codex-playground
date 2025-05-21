@@ -115,6 +115,7 @@ def _render_forecast(request: Request, slug: str, detailed: bool, user: models.U
             "today": today,
             "cities": {k: v["name"] for k, v in CITIES.items()},
             "detailed": settings.detailed_forecast,
+            "dark_mode": settings.dark_mode,
         },
     )
 

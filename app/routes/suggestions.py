@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from .. import models
 from ..database import get_db
 from ..dependencies import get_current_user, templates
+from ..user_settings import get_user_settings
 
 router = APIRouter()
 
@@ -22,9 +23,16 @@ def view_suggestions(
         .order_by(models.Suggestion.timestamp.desc())
         .all()
     )
+    settings = get_user_settings(db, user.id)
     return templates.TemplateResponse(
         "suggestions.html",
-        {"request": request, "suggestions": suggestions, "username": user.username},
+        {
+            "request": request,
+            "suggestions": suggestions,
+            "username": user.username,
+            "dark_mode": settings.dark_mode,
+            "detailed": settings.detailed_forecast,
+        },
     )
 
 

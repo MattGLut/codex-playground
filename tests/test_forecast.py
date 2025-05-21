@@ -52,6 +52,7 @@ def test_forecast_endpoint(monkeypatch, client, slug, lat, lon):
         assert f'<option value="{s}"' in response.text
     assert f'<option value="{slug}" selected' in response.text
     assert "detailedForecast" in response.text
+    assert "localStorage.setItem('darkMode'" in response.text
 
 
 @pytest.mark.parametrize(
@@ -104,6 +105,7 @@ def test_detailed_forecast_endpoint(monkeypatch, client, slug, lat, lon):
     assert 'id="city-select"' in response.text
     assert "detailedForecast" in response.text
     assert 'class="today-row"' in response.text
+    assert "localStorage.setItem('darkMode'" in response.text
 
 
 @pytest.mark.parametrize("path", [

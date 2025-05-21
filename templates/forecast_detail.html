@@ -3,6 +3,9 @@
 {% block head_scripts %}
 <script>
   localStorage.setItem('detailedForecast', {{ 'true' if detailed else 'false' }});
+  {% if dark_mode is defined %}
+  localStorage.setItem('darkMode', {{ 'true' if dark_mode else 'false' }});
+  {% endif %}
 </script>
 {% endblock %}
 {% block content %}
