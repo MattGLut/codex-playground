@@ -9,7 +9,6 @@ This repository contains a small FastAPI application with user authentication.
 - Protected page that greets authenticated users
 - Dark mode toggle available from the account settings page
 - Random dog photo page for logged in users
-- Random turtle photo page for logged in users
 - Nashville weather forecast including a detailed view
 
 ## Development

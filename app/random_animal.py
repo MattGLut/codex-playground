@@ -11,9 +11,6 @@ class RandomAnimalHandler:
         ts = int(time.time())
         if animal == "dog":
             url = f"https://placedog.net/500?{ts}"
-        elif animal == "turtle":
-            # Use Unsplash to reliably fetch a random turtle photo
-            url = f"https://source.unsplash.com/300x300/?turtle&{ts}"
         else:
             animal = "cat"
             url = f"https://cataas.com/cat?{ts}"
