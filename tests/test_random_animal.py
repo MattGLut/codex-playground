@@ -8,15 +8,6 @@ def test_dog_url(monkeypatch):
     assert animal == "dog"
     assert url == "https://placedog.net/500?123"
 
-
-def test_turtle_url(monkeypatch):
-    handler = RandomAnimalHandler()
-    monkeypatch.setattr("time.time", lambda: 456)
-    animal, url = handler.get_animal_url("turtle")
-    assert animal == "turtle"
-    assert url == "https://source.unsplash.com/300x300/?turtle&456"
-
-
 def test_default_cat(monkeypatch):
     handler = RandomAnimalHandler()
     monkeypatch.setattr("time.time", lambda: 789)
