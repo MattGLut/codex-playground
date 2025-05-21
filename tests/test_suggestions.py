@@ -40,3 +40,5 @@ def test_suggestion_submission_and_display(client):
     assert "Suggestion Box" in response.text
     assert '<a href="/suggestions">Suggestion Box</a>' in response.text
     assert '<div class="suggestion-container">' in response.text
+    assert "localStorage.setItem('darkMode'" in response.text
+    assert "localStorage.setItem('detailedForecast'" in response.text

@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Account Settings{% endblock %}
+{% block head_scripts %}
+  {{ super() }}
+  <script>
+    localStorage.setItem('darkMode', {{ 'true' if dark_mode else 'false' }});
+    localStorage.setItem('detailedForecast', {{ 'true' if detailed else 'false' }});
+  </script>
+{% endblock %}
 {% block content %}
   <div class="account-container">
     <h1>Account Settings</h1>
@@ -23,8 +30,6 @@
 {% block scripts %}
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    localStorage.setItem('darkMode', {{ 'true' if dark_mode else 'false' }});
-    localStorage.setItem('detailedForecast', {{ 'true' if detailed else 'false' }});
 
     const darkToggle = document.getElementById('toggle-dark');
     if (darkToggle) {

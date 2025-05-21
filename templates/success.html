@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Success{% endblock %}
+{% block head_scripts %}
+  {{ super() }}
+  <script>
+    localStorage.setItem('darkMode', {{ 'true' if dark_mode else 'false' }});
+    localStorage.setItem('detailedForecast', {{ 'true' if detailed else 'false' }});
+  </script>
+{% endblock %}
 {% block content %}
   <div class="success-container">
     <h1>Congrats! You signed in!</h1>
@@ -34,9 +41,6 @@
 
   const select = document.getElementById('animal-select');
   document.addEventListener('DOMContentLoaded', () => {
-    localStorage.setItem('darkMode', {{ 'true' if dark_mode else 'false' }});
-    localStorage.setItem('detailedForecast', {{ 'true' if detailed else 'false' }});
-
     const current = '{{ animal }}';
     let stored = '{{ preferred_animal }}';
     localStorage.setItem('preferredAnimal', stored);
