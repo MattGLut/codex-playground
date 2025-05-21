@@ -126,7 +126,8 @@ def nashville_forecast(
     db: Session = Depends(get_db),
 ):
     """Return Nashville's 7 day weather forecast as a web page."""
-    return _render_forecast(request, "nashville", False, user, db)
+    settings = get_user_settings(db, user.id)
+    return _render_forecast(request, "nashville", settings.detailed_forecast, user, db)
 
 
 @router.get("/forecast/nashville/detailed", response_class=HTMLResponse)
@@ -146,7 +147,8 @@ def holts_summit_forecast(
     db: Session = Depends(get_db),
 ):
     """Return Holts Summit's 7 day weather forecast as a web page."""
-    return _render_forecast(request, "holts-summit", False, user, db)
+    settings = get_user_settings(db, user.id)
+    return _render_forecast(request, "holts-summit", settings.detailed_forecast, user, db)
 
 
 @router.get("/forecast/holts-summit/detailed", response_class=HTMLResponse)
